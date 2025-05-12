@@ -1,6 +1,6 @@
 // src/components/book/BookForm.tsx
 import { useState, useEffect } from 'react';
-import { Book } from '../../types/book';
+import { Book } from '../../types/record';
 import { TextField, Button, Box } from '@mui/material';
 
 

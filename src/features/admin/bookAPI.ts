@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Book } from '../../types/book';
+import { Book } from '../../types/record';
 import { store } from '../../store/store';
 
 const API_URL = 'http://localhost:5000/api/books';

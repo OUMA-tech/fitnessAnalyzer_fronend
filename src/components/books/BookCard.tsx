@@ -15,7 +15,7 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Book } from '../../types/book'
+import { Book } from '../../types/record'
 import DeleteIcon from '@mui/icons-material/Delete';
 interface BookCardProps {
   book: Book;

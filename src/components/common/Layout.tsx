@@ -3,9 +3,9 @@ import Navigation from './Navigation';
 import PageHeader from './PageHeader';
 
 interface LayoutProps {
-  children: ReactNode, 
+  children?: ReactNode, 
   title: string,
-  subTitle: string
+  subTitle?: string
 }
 
 const Layout = ({ children, title, subTitle }: LayoutProps) => {

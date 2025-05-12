@@ -19,7 +19,7 @@ export const LoginForm = ({ onSubmit }: Props) => {
 
     return (
       <>
-          <Layout title="ALBOOK" subTitle="Signin">Login</Layout>
+          <Layout title="FitTracker" />
           <Container maxWidth="xs">
           <Paper elevation={3} sx={{ mt: 10, px: 3, py: 4, borderRadius: 2 }}>
               <Typography variant="h6" align="center" gutterBottom>

@@ -5,12 +5,14 @@ import { login } from '../../features/common/authAPI';
 import { useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
 import { useState } from 'react';
+import StravaConnectButton from '../../components/common/AuthStrava';
 
 export interface User {
   id: string;
   username: string;
   email: string;
   role: string;
+  isAuthStrava: boolean;
 }
 
 export interface LoginResponse {
@@ -22,6 +24,8 @@ export interface LoginResponse {
 export const LoginPage = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState('');
+  const [userToken, setUserToken] = useState('');
+  const [stravaBind, setStravaBind ] = useState(false);
   const navigate = useNavigate();
 
   const handleLoginSuccess = (res: LoginResponse) => {
@@ -29,8 +33,10 @@ export const LoginPage = () => {
       id: res.user.id,
       username: res.user.username,
       token: res.token,
-      role: res.user.role
+      role: res.user.role,
+      isAuthStrava: res.user.isAuthStrava,
     };
+    setUserToken(userData.token);
     // 1. save to Redux
     dispatch(setUser(userData));
 
@@ -44,8 +50,12 @@ export const LoginPage = () => {
     try {      
       const data = await login(email, password);
       handleLoginSuccess(data);
-  
-      navigate('/dashboard');
+      if(data.user.isAuthStrava){
+        navigate('/dashboard');
+      } else{
+        setStravaBind(true);
+      }
+      
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
     }
@@ -55,6 +65,7 @@ export const LoginPage = () => {
     <>
       {error && <Alert severity="error">{error}</Alert>}
       <LoginForm onSubmit={handleSubmit} />;  
+      {stravaBind && <StravaConnectButton userToken={userToken}/>}
     </> 
   )
 };

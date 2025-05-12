@@ -1,8 +1,8 @@
 // src/pages/books/BookListPage.tsx
 import { useEffect, useState } from 'react';
 import { BookCard } from '../../../components/books/BookCard';
-import { Book } from '../../../types/book';
-import { fetchBooks } from '../../../features/common/bookAPI';
+import { Book } from '../../../types/record';
+import { fetchBooks } from '../../../features/common/recordAPI';
 
 
 export const BookListPage = () => {

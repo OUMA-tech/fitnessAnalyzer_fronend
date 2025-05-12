@@ -12,9 +12,9 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
-import { Book } from '../../../types/book';
+import { Book } from '../../../types/record';
 import { BookForm } from '../../../components/books/BookForm';
-import { fetchBooks } from '../../../features/common/bookAPI';
+import { fetchBooks } from '../../../features/common/recordAPI';
 import { addBook, updateBook, deleteBook, deleteBatchBook } from '../../../features/admin/bookAPI';
 
 export const AdminBookListPage = () => {
