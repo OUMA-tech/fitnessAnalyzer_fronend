@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
+import { Card, CardContent, Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
 
 
 // ActivityList Component

@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Typography, CircularProgress, Button, Box, Alert } from '@mui/material';
-import { fetchRecords } from '../../features/common/recordAPI'; // 假设封装了 axios 请求
-
-interface Record {
-  id: string;
-  type: string;
-  distance: number;
-  date: string;
-}
-
+import { fetchRecords, fetchStravaRecords } from '../../features/common/recordAPI'; // 假设封装了 axios 请求
+import { Record } from '../../types/record';
 
 export const DashboardPage = () => {
   const [records, setRecords] = useState<Record[]>([]);
@@ -28,6 +21,20 @@ export const DashboardPage = () => {
     }
   };
 
+  const fetchStravaData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetchStravaRecords(); // 调用 API
+      setRecords(res); // 假设返回的是 { data: [...] }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to fetch records');
+    } finally {
+      setLoading(false);
+    }
+
+  }
+
   useEffect(() => {
     loadData();
   }, []);
@@ -37,6 +44,7 @@ export const DashboardPage = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5">Your Activity Records</Typography>
         <Button onClick={loadData} variant="outlined">Refresh</Button>
+        <Button onClick={fetchStravaData} variant="outlined">Fetch Strava Data</Button>
       </Box>
 
       {loading && <CircularProgress />}
@@ -51,9 +59,10 @@ export const DashboardPage = () => {
         <Box display="flex" flexDirection="column" gap={2} mt={2}>
           {records.map((rec) => (
             <Box key={rec.id} p={2} border="1px solid #ccc" borderRadius={2}>
-              <Typography><strong>{rec.type}</strong> - {rec.distance} meters</Typography>
+              <Typography><strong>{rec.name}</strong></Typography>
+              <Typography>{rec.type} - {rec.distance/1000} Km</Typography>
               <Typography variant="body2" color="text.secondary">
-                {new Date(rec.date).toLocaleString()}
+                {new Date(rec.startDate).toLocaleString()}
               </Typography>
             </Box>
           ))}
