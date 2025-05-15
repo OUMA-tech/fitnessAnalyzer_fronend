@@ -1,11 +1,7 @@
-import { Menu } from "antd";
-import MenuItem from "antd/es/menu/MenuItem";
 import { Link, useLocation } from "react-router-dom";
 import { AppBar, Toolbar, Button, Typography } from '@mui/material';
 
-function useActive(currentPath:string, path:string): string {
-    return currentPath === path? "ant-menu-item-selected" : ""
-}
+
 
 function Navigation() {
   const location = useLocation()
@@ -18,11 +14,8 @@ function Navigation() {
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           FitTrack
         </Typography>
-        <Button component={Link} to="/" variant={isActive('/')}>
-          Main
-        </Button>
-        <Button component={Link} to="/shop" variant={isActive('/shop')}>
-          Shop
+        <Button component={Link} to="/dashboard" variant={isActive('/')}>
+          DashBoard
         </Button>
         <Button component={Link} to="/login" variant={isActive('/login')}>
           SignIn

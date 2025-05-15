@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Box, Typography, Stack, Paper } from "@mui/material";
+import { Button, Container, Typography, Stack, Paper } from "@mui/material";
 
 export default function WelcomePage() {
   const navigate = useNavigate();
