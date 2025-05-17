@@ -4,7 +4,7 @@ import PageHeader from './PageHeader';
 
 interface LayoutProps {
   children?: ReactNode, 
-  title: string,
+  title?: string,
   subTitle?: string
 }
 

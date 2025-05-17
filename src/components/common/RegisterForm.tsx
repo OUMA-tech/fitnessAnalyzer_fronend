@@ -35,7 +35,9 @@ export const RegisterForm = ({ onSubmit }: Props) => {
       setFeedback(result);
     }
   return (
-    <Layout title="FitTrack" >
+    <>
+    <Layout title="FitTrack" />
+      <Box display={'flex'} flexDirection={'column'} alignItems="center" minHeight="100vh" minWidth="100vw">
       <Container maxWidth="xs">
           <Paper elevation={3} sx={{ mt: 10, px: 3, py: 4, borderRadius: 2 }}>
               <Typography variant="h6" align="center" gutterBottom>
@@ -71,11 +73,14 @@ export const RegisterForm = ({ onSubmit }: Props) => {
       {feedback && (
         <Alert
         severity={feedback.success ? 'success' : 'error'}
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, fontSize: '1.15rem', borderRadius: 2, }}
+        
       >
         {feedback.message}
       </Alert>
-)}
-    </Layout>
+      )}
+      </Box>
+      </>
   )
+  
 }

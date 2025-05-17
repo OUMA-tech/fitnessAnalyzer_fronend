@@ -10,6 +10,7 @@ import { HistoryRecordsPage } from './pages/user/HistoryRecords'
 import TrainingPlanPage from './pages/user/TrainningPlanPage'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { TodayAllPage } from './pages/user/TodatAllPage'
 
 
 function AppRoutes() {
@@ -23,6 +24,7 @@ function AppRoutes() {
       <Route path='/dashboard' element={<DashboardPage />} />
       <Route path='/historyRecords' element={<HistoryRecordsPage />} />
       <Route path='/train-plan' element={<TrainingPlanPage />} />
+      <Route path='/todayAll' element={<TodayAllPage />} />
     </Routes>
     <ToastContainer position="top-center" autoClose={2000} />
     </>

@@ -10,7 +10,9 @@ export const handleAxiosError = (err: any, fallbackMessage = 'Something went wro
     toast.error('Session expired, please log in again.');
     // 这里可以重定向或清除 token
     localStorage.clear(); 
-    window.location.href = '/';
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 2000);
   } else if (status === 403) {
     toast.error('You do not have permission to perform this action.');
   } else if (status === 500) {

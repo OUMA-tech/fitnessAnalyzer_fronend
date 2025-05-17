@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { Task } from '../../types/trainPLan'; 
+import { Plan } from '../../types/trainPLan'; 
 import { store } from '../../store/store'
 
 
-export const SynchronizedTrainPlan = async (tasks: Task[]) => {
+export const SynchronizedTrainPlan = async (tasks: Plan[]) => {
   const token = store.getState().auth.user.token;
   const res = await axios.post(
     'http://localhost:5000/api/trainPlans/', 
@@ -26,7 +26,23 @@ export const fetchTodaysPlan = async(date: Date) => {
         Authorization: `Bearer ${token}`,
       },
       params: {
-        date: date.toISOString(), // 推荐使用 ISO 格式传递日期
+        date: date.toISOString(), 
+      },
+    }
+  );
+  return res.data;
+}
+
+export const updatePlan = async(plan: Plan) => {
+  const token = store.getState().auth.user.token;
+  const res = await axios.put(
+    'http://localhost:5000/api/trainPlans/today', 
+    {
+      plan:plan,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     }
   );

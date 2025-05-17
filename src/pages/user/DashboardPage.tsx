@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Task } from '../../types/trainPLan';
+import { Plan } from '../../types/trainPLan';
 import { fetchTodaysPlan } from '../../features/user/trainPlanAPI';
 import dayjs from 'dayjs';
 import {
@@ -13,41 +13,65 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
+  Button,
+  Alert
 } from '@mui/material';
 import Layout from '../../components/common/Layout';
+import { FaCalendarDay, FaPlus, FaHistory } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import { useDispatch } from 'react-redux';
+import { setPlans } from '../../slices/planSlice';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleGoToPlan = () => navigate('/train-plan');
-  const handleGoToHistory = () => navigate('/history');
+  const [todaysPlan, setTodaysPlan] = useState<Plan[]>([]);
 
-  const [todaysPlan, setTodaysPlan] = useState<Task[]>([]);
+  const planFromRedux = useSelector((state: RootState) => state.plans.todayplans);
 
   const today = dayjs().startOf('day').utc().toDate();
+  
+  const handleGoToPlan = () => navigate('/todayAll');
+  const handleGoToEditPlan = () => navigate('/train-plan');
+  const handleGoToHistory = () => navigate('/historyRecords');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const cached = localStorage.getItem('todays-plan');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          const restored = parsed.map((task: any) => ({
+        if (planFromRedux && planFromRedux.length > 0) {
+          const restored:Plan[] = planFromRedux.map((task: Plan) => ({
             ...task,
             date: new Date(task.date),
           }));
-          setTodaysPlan(restored)
+          setTodaysPlan(restored);
+          return;
+        }
+        const cached = localStorage.getItem('todays-plan');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          const restored:Plan[] = parsed.map((task: Plan) => ({
+            ...task,
+            date: new Date(task.date),
+          }));
+          console.log(parsed);
+          setTodaysPlan(restored);
+          dispatch(setPlans(parsed));
+
+          // dispatch(setPlans(restored));
           return;
         }
         
         const res = await fetchTodaysPlan(today);
         const data = res.data;
-        // console.log(data);
+        console.log(data);
         const restored = data.map((task: any) => ({
           ...task,
           date: new Date(task.date), 
         }));
-        setTodaysPlan(restored)     
+        setTodaysPlan(restored);   
+        // dispatch(setPlans(data)); 
         localStorage.setItem('todays-plan', JSON.stringify(restored)); 
       } catch (err) {
         console.error('Failed to fetch today\'s plan:', err);
@@ -56,7 +80,7 @@ export const DashboardPage = () => {
 
     fetchData();
   }, []);
-  console.log(todaysPlan);
+  // console.log(todaysPlan);
 
   return (
     <div className="p-6 space-y-6">
@@ -64,31 +88,37 @@ export const DashboardPage = () => {
       <h1 className="text-2xl font-bold">🏋️ Welcome back, Athlete!</h1>
 
       {/* Buttons */}
-      <div className="flex space-x-4">
+      <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
+      <button className="flex items-center gap-4 bg-green-600 text-white px-5 py-2 rounded-lg shadow hover:bg-green-700 transition"
+      onClick={handleGoToPlan}>
+        <FaCalendarDay className="text-xl" />
+        <span>Today's Plan</span>
+      </button>
+
       <button
-          onClick={handleGoToHistory}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Today's plan
-        </button>
-        
-        <button
-          onClick={handleGoToPlan}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Add a new plan
-        </button>
-        <button
-          onClick={handleGoToHistory}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          History Records
-        </button>
-      </div>
+        onClick={handleGoToEditPlan}
+        className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+      >
+        <FaPlus />
+        Add New Plan
+      </button>
+
+      <button
+        onClick={handleGoToHistory}
+        className="flex items-center gap-2 bg-gray-600 text-white px-5 py-2 rounded-lg shadow hover:bg-gray-700 transition"
+      >
+        <FaHistory />
+        History Records
+      </button>
+    </div>
       { todaysPlan.length === 0 ? (
-        <Typography color="textSecondary">No training plan for today.</Typography>
+          <Alert severity="info" sx={{ mt: 4, borderRadius: 2 }}>
+          <Typography variant="h6" textAlign="center">
+            No training plan for today.
+          </Typography>
+        </Alert>
       ) : (
-        todaysPlan.map((task) => (
+        todaysPlan.slice(0, 3).map((task) => (
           <Card key={task.id} variant="outlined" sx={{ mb: 2 }}>
             <CardContent>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
@@ -129,21 +159,31 @@ export const DashboardPage = () => {
             </CardContent>
           </Card>
         )))}
+        {todaysPlan.length > 3 && (
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate('/today/all', { state: { todaysPlan } })} 
+            >
+              View all ({todaysPlan.length})
+            </Button>
+          </Box>
+        )}
       {/* Training Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+      {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         <SummaryCard title="本周总距离" value="42.3 km" />
         <SummaryCard title="运动总时间" value="5h 20m" />
         <SummaryCard title="平均速度" value="7.9 km/h" />
         <SummaryCard title="训练次数" value="6 次" />
-      </div>
+      </div> */}
 
       {/* Chart Placeholder */}
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <h2 className="text-lg font-semibold mb-2">📊 近一周运动时长</h2>
         <div className="h-64 bg-gray-100 rounded flex items-center justify-center">
           图表（如 BarChart）可在此渲染
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

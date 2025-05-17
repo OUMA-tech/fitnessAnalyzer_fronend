@@ -41,10 +41,11 @@ export const HistoryRecordsPage = () => {
   }, []);
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Layout title="" />
+    <>
+    <Layout title="" />
+    <Container>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5">Your Activity Records</Typography>
+        <Typography variant="h5" sx={{mt:2}}>Your Activity Records</Typography>
         <Button onClick={loadData} variant="outlined">Refresh</Button>
         <Button onClick={fetchStravaData} variant="outlined">Fetch Strava Data</Button>
       </Box>
@@ -62,7 +63,15 @@ export const HistoryRecordsPage = () => {
           {records.map((rec) => (
             <Box key={rec.id} p={2} border="1px solid #ccc" borderRadius={2}>
               <Typography><strong>{rec.name}</strong></Typography>
-              <Typography>{rec.type} - {rec.distance/1000} Km</Typography>
+              <Typography>
+              {rec.type}  {
+                rec.type === 'Ride' || rec.type === 'Run'
+                  ? `- ${(rec.distance / 1000).toFixed(1)} km`
+                  : rec.type === 'Swim'
+                  ? `- ${rec.distance.toFixed(0)} m`
+                  : ''
+              }
+              </Typography>
               <Typography variant="body2" color="text.secondary">
                 {new Date(rec.startDate).toLocaleString()}
               </Typography>
@@ -71,5 +80,6 @@ export const HistoryRecordsPage = () => {
         </Box>
       )}
     </Container>
+    </>
   );
 };

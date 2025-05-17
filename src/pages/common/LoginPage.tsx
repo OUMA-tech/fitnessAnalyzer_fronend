@@ -3,7 +3,7 @@ import { LoginForm } from '../../components/common/LoginForm';
 import { setUser } from '../../slices/authSlice';
 import { login } from '../../features/common/authAPI';
 import { useNavigate } from 'react-router-dom';
-import { Alert } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 import { useState } from 'react';
 import StravaConnectButton from '../../components/common/AuthStrava';
 
@@ -62,10 +62,10 @@ export const LoginPage = () => {
   };
 
   return(
-    <>
+    <Box>
       {error && <Alert severity="error">{error}</Alert>}
-      <LoginForm onSubmit={handleSubmit} />;  
+      {!userToken && <LoginForm onSubmit={handleSubmit} />}
       {stravaBind && <StravaConnectButton userToken={userToken}/>}
-    </> 
+    </Box> 
   )
 };

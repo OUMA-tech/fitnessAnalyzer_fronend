@@ -21,7 +21,9 @@ import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import utc from 'dayjs/plugin/utc';
-import { Task } from '../../types/trainPLan';
+import { Plan } from '../../types/trainPLan';
+import { useDispatch } from 'react-redux';
+import { clearPlans } from '../../slices/planSlice';
 dayjs.extend(utc);
 
 export enum TaskType {
@@ -32,12 +34,17 @@ export enum TaskType {
   Yoga = '🧘‍♂️ Yoga',
 }
 
+interface PlanWithUIState extends Plan {
+  expanded?: boolean; 
+}
+
 
 export default function TrainingEditor() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<PlanWithUIState[]>([]);
   const [selectedTaskType, setSelectedTaskType] = useState<TaskType | ''>('');
   const [subTaskInputs, setSubTaskInputs] = useState<Record<number, string>>({});
   const today = dayjs().startOf('day').utc().toDate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const stored = localStorage.getItem('training-tasks');
@@ -65,7 +72,7 @@ export default function TrainingEditor() {
 
   const handleAddTask = () => {
     if (!selectedTaskType) return;
-    const newTask: Task = {
+    const newTask: PlanWithUIState = {
       id: Date.now(),
       status: 'draft',
       title: selectedTaskType,
@@ -155,11 +162,14 @@ export default function TrainingEditor() {
     );
   };
 
-  const handleSynchronizTrainPlan = async (tasks:Task[]) => {
+  const handleSynchronizTrainPlan = async (tasks:Plan[]) => {
     if (tasks.length) {
       try {
         const res = await SynchronizedTrainPlan(tasks);
+        console.log(res);
         localStorage.removeItem('training-tasks');
+        localStorage.removeItem('todays-plan');
+        dispatch(clearPlans());
         setTasks([]);
         toast.success('Training plan saved success ✅');
       } catch (err) {
