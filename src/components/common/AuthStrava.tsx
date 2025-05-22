@@ -2,7 +2,7 @@ import { Box, Button, Typography, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const STRAVA_CLIENT_ID = '158986';
-const REDIRECT_URI = 'http://localhost:5000/api/strava/callback';
+const REDIRECT_URI = 'https://fitnessanalyzer-backend.onrender.com/api/strava/callback';
 const SCOPE = 'read,activity:read_all';
 
 export default function StravaConnectButton({ userToken }: { userToken: string }) {
