@@ -1,9 +1,9 @@
 // authSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Plan, SubTask } from '../types/trainPLan';
+import { SubTask } from '../types/trainPLan';
 
 interface PlanState {
-  todayplans: PlanForRedux[];
+  weeklyplans: PlanForRedux[];
 }
 
 export interface PlanForRedux {
@@ -15,21 +15,21 @@ export interface PlanForRedux {
 }
 
 const initialState: PlanState = {
-  todayplans: [],
+  weeklyplans: [],
 };
 
 const planSlice = createSlice({
   name: 'plans',
   initialState,
   reducers: {
-    setPlans: (state, action: PayloadAction<PlanForRedux[]>) => {
-      state.todayplans = action.payload;
+    setWeeklyPlans: (state, action: PayloadAction<PlanForRedux[]>) => {
+      state.weeklyplans = action.payload;
     },
-    clearPlans: (state) => {
-      state.todayplans = [];
+    clearWeeklyPlans: (state) => {
+      state.weeklyplans = [];
     },
   },
 });
 
-export const { setPlans, clearPlans } = planSlice.actions;
+export const { setWeeklyPlans, clearWeeklyPlans } = planSlice.actions;
 export default planSlice.reducer;

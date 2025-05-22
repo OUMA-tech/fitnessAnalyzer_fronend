@@ -23,7 +23,7 @@ import { handleAxiosError } from '../../utils/handleAxiosError';
 import utc from 'dayjs/plugin/utc';
 import { Plan } from '../../types/trainPLan';
 import { useDispatch } from 'react-redux';
-import { clearPlans } from '../../slices/planSlice';
+import { clearWeeklyPlans } from '../../slices/planSlice';
 dayjs.extend(utc);
 
 export enum TaskType {
@@ -166,10 +166,7 @@ export default function TrainingEditor() {
     if (tasks.length) {
       try {
         const res = await SynchronizedTrainPlan(tasks);
-        console.log(res);
-        localStorage.removeItem('training-tasks');
-        localStorage.removeItem('todays-plan');
-        dispatch(clearPlans());
+        dispatch(clearWeeklyPlans());
         setTasks([]);
         toast.success('Training plan saved success ✅');
       } catch (err) {

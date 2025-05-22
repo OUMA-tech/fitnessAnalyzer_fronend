@@ -11,6 +11,7 @@ import TrainingPlanPage from './pages/user/TrainningPlanPage'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { TodayAllPage } from './pages/user/TodatAllPage'
+import ProfilePage from './pages/user/ProfilePage'
 
 
 function AppRoutes() {
@@ -25,6 +26,7 @@ function AppRoutes() {
       <Route path='/historyRecords' element={<HistoryRecordsPage />} />
       <Route path='/train-plan' element={<TrainingPlanPage />} />
       <Route path='/todayAll' element={<TodayAllPage />} />
+      <Route path='/profile' element={<ProfilePage />} />
     </Routes>
     <ToastContainer position="top-center" autoClose={2000} />
     </>

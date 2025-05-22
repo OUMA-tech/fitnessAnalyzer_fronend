@@ -6,12 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Box } from '@mui/material';
 import { useState } from 'react';
 import StravaConnectButton from '../../components/common/AuthStrava';
+import { getCookies } from '../../features/user/profileAPI';
 
 export interface User {
   id: string;
   username: string;
   email: string;
   role: string;
+  avatar: string;
   isAuthStrava: boolean;
 }
 
@@ -28,18 +30,19 @@ export const LoginPage = () => {
   const [stravaBind, setStravaBind ] = useState(false);
   const navigate = useNavigate();
 
-  const handleLoginSuccess = (res: LoginResponse) => {
+  const handleLoginSuccess = async(res: LoginResponse) => {
     const userData = {
       id: res.user.id,
       username: res.user.username,
       token: res.token,
       role: res.user.role,
       isAuthStrava: res.user.isAuthStrava,
+      avatar:res.user.avatar,
     };
     setUserToken(userData.token);
     // 1. save to Redux
     dispatch(setUser(userData));
-
+    await getCookies();
     // 2. save to localStorage
     localStorage.setItem('auth', JSON.stringify(userData));
   };

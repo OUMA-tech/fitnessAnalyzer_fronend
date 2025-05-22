@@ -12,6 +12,10 @@ function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isAuthenticated = useSelector((state: RootState)=>state.auth.isAuthenticated);
+  console.log(user);
+
   const isActive = (path: string) =>
     location.pathname === path ? 'contained' : 'text';
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -23,7 +27,11 @@ function Navigation() {
     setAnchorEl(null);
   };
 
-  const isAuthenticated = useSelector((state: RootState)=>state.auth.isAuthenticated);
+  const handleProfile = () => {
+    navigate('/profile');
+  }
+
+ 
   // console.log(isAuthenticated);
   return (
     <AppBar position="static" color="default" elevation={1}>
@@ -54,7 +62,7 @@ function Navigation() {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        <Avatar />
+        <Avatar src={`https://d1uwxokmhmn1hs.cloudfront.net/avatars/${user.avatar}`}/>
       </Button>
       <Menu
         id="basic-menu"
@@ -62,7 +70,7 @@ function Navigation() {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleProfile}>Profile</MenuItem>
         <MenuItem onClick={handleClose}>My account</MenuItem>
         <MenuItem onClick={()=>{handleLogout(dispatch,navigate)}}>Logout</MenuItem>
       </Menu>

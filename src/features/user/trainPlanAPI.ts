@@ -14,10 +14,11 @@ export const SynchronizedTrainPlan = async (tasks: Plan[]) => {
       },
     }
   );
+  console.log(res.data);
   return res.data;
 };
 
-export const fetchTodaysPlan = async(date: Date) => {
+export const fetchDurationPlan = async(start: string, end: string) => {
   const token = store.getState().auth.user.token;
   const res = await axios.get(
     'http://localhost:5000/api/trainPlans/today', 
@@ -26,7 +27,8 @@ export const fetchTodaysPlan = async(date: Date) => {
         Authorization: `Bearer ${token}`,
       },
       params: {
-        date: date.toISOString(), 
+        start,
+        end, 
       },
     }
   );

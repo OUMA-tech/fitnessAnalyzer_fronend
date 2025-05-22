@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Plan } from '../../types/trainPLan';
-import { fetchTodaysPlan } from '../../features/user/trainPlanAPI';
+import { fetchDurationPlan } from '../../features/user/trainPlanAPI';
 import dayjs from 'dayjs';
 import {
   Box,
@@ -13,79 +13,94 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Button,
-  Alert
+  Alert,
+  Paper,
+  Divider,
+  Button
 } from '@mui/material';
 import Layout from '../../components/common/Layout';
 import { FaCalendarDay, FaPlus, FaHistory } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { useDispatch } from 'react-redux';
-import { setPlans } from '../../slices/planSlice';
+import { setWeeklyPlans } from '../../slices/planSlice';
+import { Dayjs } from 'dayjs';
+import WeeklyPlans from '../../components/common/WeeklyPlans';
+import WeeklySummary from '../../components/common/WeeklySummary';
+import { handleAxiosError } from '../../utils/handleAxiosError';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [todaysPlan, setTodaysPlan] = useState<Plan[]>([]);
-
-  const planFromRedux = useSelector((state: RootState) => state.plans.todayplans);
-
-  const today = dayjs().startOf('day').utc().toDate();
+  const [thisWeekPlan, setThisWeekPlan] = useState<Plan[]>([]);
+  const today: Dayjs = dayjs();
+  const planFromRedux = useSelector((state: RootState) => state.plans.weeklyplans);
   
   const handleGoToPlan = () => navigate('/todayAll');
   const handleGoToEditPlan = () => navigate('/train-plan');
   const handleGoToHistory = () => navigate('/historyRecords');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (planFromRedux && planFromRedux.length > 0) {
-          const restored:Plan[] = planFromRedux.map((task: Plan) => ({
-            ...task,
-            date: new Date(task.date),
-          }));
-          setTodaysPlan(restored);
-          return;
-        }
-        const cached = localStorage.getItem('todays-plan');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          const restored:Plan[] = parsed.map((task: Plan) => ({
-            ...task,
-            date: new Date(task.date),
-          }));
-          console.log(parsed);
-          setTodaysPlan(restored);
-          dispatch(setPlans(parsed));
+  const user = useSelector((state: RootState) => state.auth.user);
 
-          // dispatch(setPlans(restored));
-          return;
-        }
-        
-        const res = await fetchTodaysPlan(today);
-        const data = res.data;
-        console.log(data);
-        const restored = data.map((task: any) => ({
-          ...task,
-          date: new Date(task.date), 
-        }));
-        setTodaysPlan(restored);   
-        // dispatch(setPlans(data)); 
-        localStorage.setItem('todays-plan', JSON.stringify(restored)); 
+  useEffect(() => {
+
+    const fetchThisWeekPlan = async() => {
+      try{
+        if (planFromRedux && planFromRedux.length > 0) {
+          console.log("fetching from redux.......");
+          const strToday = planFromRedux.filter((task) => dayjs(task.date).isSame(dayjs(), 'day'));
+          const weeklyplans = planFromRedux.map(plan => ({
+            ...plan,
+            date: new Date(plan.date),
+          }));
+          setThisWeekPlan(weeklyplans); 
+          const todayPlans = strToday.map(plan => ({
+            ...plan,
+            date: new Date(plan.date),
+          }));
+          setTodaysPlan(todayPlans);
+         } else{
+          console.log("fetching from database.......");
+          const start = dayjs(today).startOf('week').toISOString();
+          const end = dayjs(today).endOf('week').toISOString();
+          const res = await fetchDurationPlan(start, end);
+          const data = res.data;
+          console.log(data);
+          dispatch(setWeeklyPlans(data));
+          const weeklyplans = data.map((plan:Plan) => ({
+            ...plan,
+            date: new Date(plan.date),
+          }));
+          setThisWeekPlan(weeklyplans); 
+          const strToday = data.filter((plan:Plan) =>
+            dayjs(plan.date).isSame(dayjs(), 'day')
+          );
+          const todayPlans = strToday.map((plan:Plan) => ({
+            ...plan,
+            date: new Date(plan.date),
+          }));
+          console.log(todaysPlan);
+          setTodaysPlan(todayPlans);
+         }
+          
       } catch (err) {
         console.error('Failed to fetch today\'s plan:', err);
+        handleAxiosError(err, 'Failed to update plan');
       }
-    };
-
-    fetchData();
+    }
+    fetchThisWeekPlan();
   }, []);
-  // console.log(todaysPlan);
+  
+  
+  console.log(todaysPlan);
+
 
   return (
     <div className="p-6 space-y-6">
       <Layout title='' />
-      <h1 className="text-2xl font-bold">🏋️ Welcome back, Athlete!</h1>
+      <h1 className="text-2xl font-bold">🏋️ Welcome back, {user.username}!</h1>
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
@@ -111,6 +126,18 @@ export const DashboardPage = () => {
         History Records
       </button>
     </div>
+    <Box padding={1}>
+    <WeeklySummary weeklyplans={thisWeekPlan} />
+    </Box>
+    <Box padding={1}>
+      <Paper elevation={3} sx={{ padding: 2 }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          🗓️ Plan This Week
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+        <WeeklyPlans thisWeekPlan={thisWeekPlan} />
+      </Paper>
+    </Box>
       { todaysPlan.length === 0 ? (
           <Alert severity="info" sx={{ mt: 4, borderRadius: 2 }}>
           <Typography variant="h6" textAlign="center">
@@ -163,12 +190,14 @@ export const DashboardPage = () => {
           <Box display="flex" justifyContent="center" mt={2}>
             <Button
               variant="outlined"
-              onClick={() => navigate('/today/all', { state: { todaysPlan } })} 
+              onClick={() => navigate('/todayAll', { state: { todaysPlan } })} 
             >
               View all ({todaysPlan.length})
             </Button>
           </Box>
         )}
+        
+
       {/* Training Summary */}
       {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         <SummaryCard title="本周总距离" value="42.3 km" />

@@ -16,10 +16,11 @@ import Layout from '../../components/common/Layout';
 import { blue } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { setPlans } from '../../slices/planSlice';
+import { setWeeklyPlans } from '../../slices/planSlice';
 import { toast } from 'react-toastify';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import { updatePlan } from '../../features/user/trainPlanAPI';
+import dayjs from 'dayjs';
 
 interface PlanWithUIState extends Plan {
   expanded?: boolean; 
@@ -30,32 +31,21 @@ export const TodayAllPage = () => {
 
   const [todaysPlan, setTodaysPlan] = useState<PlanWithUIState[]>([]);
 
-  const planFromRedux = useSelector((state: RootState) => state.plans.todayplans);
+  const planFromRedux = useSelector((state: RootState) => state.plans.weeklyplans);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (planFromRedux && planFromRedux.length > 0) {
-          const restored:Plan[] = planFromRedux.map((task) => ({
-            ...task,
-            date: new Date(task.date),
+          const restored = planFromRedux.filter((task) => dayjs(task.date).isSame(dayjs(), 'day'));
+          const todayPlans = restored.map(plan => ({
+            ...plan,
+            date: new Date(plan.date),
           }));
-          setTodaysPlan(restored);
+          setTodaysPlan(todayPlans);
           return;
         }
-        const cached = localStorage.getItem('todays-plan');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          const restored:Plan[] = parsed.map((task: Plan) => ({
-            ...task,
-            date: new Date(task.date),
-          }));
-          console.log(restored);
-          setTodaysPlan(restored);
-          dispatch(setPlans(parsed));
-
-          return;
-        }
+        
       } catch (err) {
         console.error('Failed to fetch today\'s plan:', err);
       }
@@ -95,12 +85,11 @@ export const TodayAllPage = () => {
     try {
       await updatePlan(plan); // 调用后端 API 修改状态
       toast.success('Updated successfully!');
-      const stored = todaysPlan.map((plan:Plan)=>({
-        ...plan,
-        date: plan.date.toISOString(),
-      })) 
-      dispatch(setPlans(stored));
-      localStorage.setItem('todays-plan', JSON.stringify(stored))
+      // const stored = todaysPlan.map((plan:Plan)=>({
+      //   ...plan,
+      //   date: plan.date.toISOString(),
+      // })) 
+      // dispatch(setWeeklyPlans(stored));
       // dispatch(updatePlanStatusInStore(planId));
   
     } catch (err) {
