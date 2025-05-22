@@ -38,7 +38,7 @@ export const fetchDurationPlan = async(start: string, end: string) => {
 export const updatePlan = async(plan: Plan) => {
   const token = store.getState().auth.user.token;
   const res = await axios.put(
-    `${apiBaseUrl}api/trainPlans/today`, 
+    `${apiBaseUrl}/api/trainPlans/today`, 
     {
       plan:plan,
     },
