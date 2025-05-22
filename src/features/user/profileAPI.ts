@@ -36,11 +36,11 @@ export const uploadToS3 = async(file: File, presignedUrl: string) => {
   }
 }
 
-export const updateProfile = async(key:string) => {
+export const updateProfile = async(key:string, username:string) => {
   const token = store.getState().auth.user.token;
   const res = await axios.put(
     'http://localhost:5000/api/profile/success', 
-    { key },
+    { key, username },
     {
       headers: {
         'Authorization': `Bearer ${token}`,

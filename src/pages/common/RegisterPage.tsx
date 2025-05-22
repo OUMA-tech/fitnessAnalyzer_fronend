@@ -2,7 +2,7 @@ import { RegisterForm } from '../../components/common/RegisterForm';
 import { register } from '../../features/common/authAPI';
 import { useNavigate } from 'react-router-dom';
 
-export const RegisterPage = () => {
+const RegisterPage = () => {
 
   const navigate = useNavigate();
 
@@ -25,3 +25,5 @@ export const RegisterPage = () => {
     </>
   )
 }
+
+export default RegisterPage;

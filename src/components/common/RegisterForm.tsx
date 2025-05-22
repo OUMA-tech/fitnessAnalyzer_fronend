@@ -36,7 +36,7 @@ export const RegisterForm = ({ onSubmit }: Props) => {
     }
   return (
     <>
-    <Layout title="FitTrack" />
+    <Layout />
       <Box display={'flex'} flexDirection={'column'} alignItems="center" minHeight="100vh" minWidth="100vw">
       <Container maxWidth="xs">
           <Paper elevation={3} sx={{ mt: 10, px: 3, py: 4, borderRadius: 2 }}>

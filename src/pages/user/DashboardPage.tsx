@@ -29,7 +29,7 @@ import WeeklyPlans from '../../components/common/WeeklyPlans';
 import WeeklySummary from '../../components/common/WeeklySummary';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 
-export const DashboardPage = () => {
+const DashboardPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -99,7 +99,7 @@ export const DashboardPage = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <Layout title='' />
+      <Layout/>
       <h1 className="text-2xl font-bold">🏋️ Welcome back, {user.username}!</h1>
 
       {/* Buttons */}
@@ -217,9 +217,11 @@ export const DashboardPage = () => {
   );
 };
 
-const SummaryCard = ({ title, value }: { title: string; value: string }) => (
-  <div className="bg-white shadow p-4 rounded text-center">
-    <div className="text-sm text-gray-500">{title}</div>
-    <div className="text-xl font-bold">{value}</div>
-  </div>
-);
+// const SummaryCard = ({ title, value }: { title: string; value: string }) => (
+//   <div className="bg-white shadow p-4 rounded text-center">
+//     <div className="text-sm text-gray-500">{title}</div>
+//     <div className="text-xl font-bold">{value}</div>
+//   </div>
+// );
+
+export default DashboardPage;

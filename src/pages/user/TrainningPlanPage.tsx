@@ -166,6 +166,7 @@ export default function TrainingEditor() {
     if (tasks.length) {
       try {
         const res = await SynchronizedTrainPlan(tasks);
+        console.log(res);
         dispatch(clearWeeklyPlans());
         setTasks([]);
         toast.success('Training plan saved success ✅');
@@ -179,7 +180,7 @@ export default function TrainingEditor() {
 
   return (
     <>
-    <Layout title='' />
+    <Layout />
       <Box className="p-4 max-w-xl mx-auto space-y-4">
         <Box display="flex" gap={2}>
           <Select

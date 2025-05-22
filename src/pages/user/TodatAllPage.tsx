@@ -14,20 +14,18 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useState, useEffect } from 'react';
 import Layout from '../../components/common/Layout';
 import { blue } from '@mui/material/colors';
-import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { setWeeklyPlans } from '../../slices/planSlice';
 import { toast } from 'react-toastify';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import { updatePlan } from '../../features/user/trainPlanAPI';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
 
 interface PlanWithUIState extends Plan {
   expanded?: boolean; 
 }
 
-export const TodayAllPage = () => {
-  const dispatch = useDispatch();
+const TodayAllPage = () => {
 
   const [todaysPlan, setTodaysPlan] = useState<PlanWithUIState[]>([]);
 
@@ -188,3 +186,5 @@ export const TodayAllPage = () => {
 
   );
 };
+
+export default TodayAllPage;

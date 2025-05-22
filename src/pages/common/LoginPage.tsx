@@ -23,7 +23,7 @@ export interface LoginResponse {
   user: User;
 }
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState('');
   const [userToken, setUserToken] = useState('');
@@ -72,3 +72,4 @@ export const LoginPage = () => {
     </Box> 
   )
 };
+export default LoginPage;

@@ -1,14 +1,11 @@
 import { ReactNode } from 'react';
 import Navigation from './Navigation';
-import PageHeader from './PageHeader';
 
 interface LayoutProps {
   children?: ReactNode, 
-  title?: string,
-  subTitle?: string
 }
 
-const Layout = ({ children, title, subTitle }: LayoutProps) => {
+const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="layout-container"> {/* 添加 className 便于样式控制 */}
       <Navigation />

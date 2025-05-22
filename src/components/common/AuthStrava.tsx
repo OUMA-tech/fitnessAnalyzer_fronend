@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 const STRAVA_CLIENT_ID = '158986';
 const REDIRECT_URI = 'http://localhost:5000/api/strava/callback';
 const SCOPE = 'read,activity:read_all';
-const url = 'https://www.strava.com/oauth/authorize';
 
 export default function StravaConnectButton({ userToken }: { userToken: string }) {
   const navigate = useNavigate();

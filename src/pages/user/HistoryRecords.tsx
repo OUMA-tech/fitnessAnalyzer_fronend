@@ -4,7 +4,7 @@ import { fetchRecords, fetchStravaRecords } from '../../features/common/recordAP
 import { Record } from '../../types/record';
 import Layout from '../../components/common/Layout';
 
-export const HistoryRecordsPage = () => {
+const HistoryRecordsPage = () => {
   const [records, setRecords] = useState<Record[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export const HistoryRecordsPage = () => {
 
   return (
     <>
-    <Layout title="" />
+    <Layout />
     <Container>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5" sx={{mt:2}}>Your Activity Records</Typography>
@@ -83,3 +83,5 @@ export const HistoryRecordsPage = () => {
     </>
   );
 };
+
+export default HistoryRecordsPage;

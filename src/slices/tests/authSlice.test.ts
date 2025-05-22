@@ -8,12 +8,13 @@ describe('authSlice tests', () => {
       username: null,
       token: null,
       role: null,
+      avatar: null,
     },
     isAuthenticated: false,
   };
 
   it('should handle setUser', () => {
-    const userData = { id: '123', username: 'test', token: 'some-token', role: 'admin' };
+    const userData = { id: '123', username: 'test', token: 'some-token', role: 'admin', avatar:'' };
     
     //  setUser action
     const action = setUser(userData);
@@ -28,7 +29,7 @@ describe('authSlice tests', () => {
 
   it('should handle clearUser', () => {
     const loggedInState = {
-      user: { id: '123', username: 'test', token: 'some-token', role: 'admin' },
+      user: { id: '123', username: 'test', token: 'some-token', role: 'admin', avatar:'' },
       isAuthenticated: true,
     };
     

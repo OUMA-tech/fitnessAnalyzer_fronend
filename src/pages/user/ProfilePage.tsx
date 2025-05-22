@@ -16,11 +16,12 @@ import { toast } from 'react-toastify';
 import Layout from "../../components/common/Layout";
 
 export default function ProfilePage() {
-  const [username, setUsername] = useState("");
+  
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState("");
   const user = useSelector((state: RootState) => state.auth.user);
-  
+  const [username, setUsername] = useState(user?.username||"");
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -33,7 +34,7 @@ export default function ProfilePage() {
   };
   
 
-  const handleSave = async () => {
+  const handleSave = async (username:string) => {
     try{
       if (avatarFile) {
         const fileName = avatarFile.name;
@@ -42,7 +43,7 @@ export default function ProfilePage() {
         console.log(uploadUrl);
         const res = await uploadToS3(avatarFile, uploadUrl);
         if(res){
-          const result = await updateProfile(key);
+          const result = await updateProfile(key, username);
           toast.done(result);
         }else{
           toast.error('Upload failed');
@@ -84,7 +85,7 @@ export default function ProfilePage() {
             fullWidth
           />
 
-          <Button variant="contained" onClick={handleSave}>
+          <Button variant="contained" onClick={()=>{ handleSave(username) }}>
             Save Changes
           </Button>
         </Stack>
