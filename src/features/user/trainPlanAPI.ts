@@ -2,11 +2,11 @@ import axios from 'axios';
 import { Plan } from '../../types/trainPLan'; 
 import { store } from '../../store/store'
 
-
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 export const SynchronizedTrainPlan = async (tasks: Plan[]) => {
   const token = store.getState().auth.user.token;
   const res = await axios.post(
-    'http://localhost:5000/api/trainPlans/', 
+    `${apiBaseUrl}/api/trainPlans/`, 
     { tasks },
     {
       headers: {
@@ -21,7 +21,7 @@ export const SynchronizedTrainPlan = async (tasks: Plan[]) => {
 export const fetchDurationPlan = async(start: string, end: string) => {
   const token = store.getState().auth.user.token;
   const res = await axios.get(
-    'http://localhost:5000/api/trainPlans/today', 
+    `${apiBaseUrl}/api/trainPlans/today`, 
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ export const fetchDurationPlan = async(start: string, end: string) => {
 export const updatePlan = async(plan: Plan) => {
   const token = store.getState().auth.user.token;
   const res = await axios.put(
-    'http://localhost:5000/api/trainPlans/today', 
+    `${apiBaseUrl}api/trainPlans/today`, 
     {
       plan:plan,
     },

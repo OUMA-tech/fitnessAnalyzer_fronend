@@ -14,7 +14,7 @@ function Navigation() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const isAuthenticated = useSelector((state: RootState)=>state.auth.isAuthenticated);
-  console.log(user);
+  // console.log(user);
 
   const isActive = (path: string) =>
     location.pathname === path ? 'contained' : 'text';

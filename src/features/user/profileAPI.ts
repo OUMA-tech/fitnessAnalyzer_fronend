@@ -1,10 +1,11 @@
 import axios from "axios";
 import { store } from '../../store/store'
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 export const getUploadUrl = async(fileName:string,fileType:string) => {
   const token = store.getState().auth.user.token;
   const res = await axios.post(
-    'http://localhost:5000/api/profile/', 
+    `${apiBaseUrl}/api/profile/`, 
     { fileName, fileType },
     {
       headers: {
@@ -39,7 +40,7 @@ export const uploadToS3 = async(file: File, presignedUrl: string) => {
 export const updateProfile = async(key:string, username:string) => {
   const token = store.getState().auth.user.token;
   const res = await axios.put(
-    'http://localhost:5000/api/profile/success', 
+    `${apiBaseUrl}/api/profile/success`, 
     { key, username },
     {
       headers: {
@@ -55,7 +56,7 @@ export const updateProfile = async(key:string, username:string) => {
 export const getCookies = async() => {
   const token = store.getState().auth.user.token;
   const res = await axios.get(
-    'http://localhost:5000/api/auth/cookie', 
+    `${apiBaseUrl}/api/auth/cookie`, 
     {
       headers: {
         'Authorization': `Bearer ${token}`,
