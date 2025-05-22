@@ -42,9 +42,11 @@ const LoginPage = () => {
     setUserToken(userData.token);
     // 1. save to Redux
     dispatch(setUser(userData));
-    await getCookies();
     // 2. save to localStorage
     localStorage.setItem('auth', JSON.stringify(userData));
+    //3. get avatar cookies
+    await getCookies();
+
   };
 
   
