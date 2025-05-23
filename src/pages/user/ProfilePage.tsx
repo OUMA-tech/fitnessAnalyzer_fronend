@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { toast } from 'react-toastify';
 import Layout from "../../components/common/Layout";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
   
@@ -21,6 +22,7 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = useState("");
   const user = useSelector((state: RootState) => state.auth.user);
   const [username, setUsername] = useState(user?.username||"");
+  const navigate = useNavigate();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -43,8 +45,12 @@ export default function ProfilePage() {
         console.log(uploadUrl);
         const res = await uploadToS3(avatarFile, uploadUrl);
         if(res){
-          const result = await updateProfile(key, username);
-          toast.done(result);
+          await updateProfile(key, username);
+          toast.success("update avatar success");
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 1000);
+
         }else{
           toast.error('Upload failed');
         }
