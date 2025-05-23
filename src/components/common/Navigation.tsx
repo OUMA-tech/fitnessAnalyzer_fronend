@@ -62,7 +62,7 @@ function Navigation() {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        <Avatar src={`https://d1uwxokmhmn1hs.cloudfront.net/avatars/${user.avatar}`}/>
+        <Avatar src={`https://d1uwxokmhmn1hs.cloudfront.net/${user.avatar}`}/>
       </Button>
       <Menu
         id="basic-menu"
