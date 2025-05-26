@@ -1,5 +1,6 @@
 import { Plan } from "../types/trainPLan";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+
 
 
 
@@ -9,6 +10,10 @@ interface PlanWithUIState extends Plan {
 export function usePlanBuilder(initialPlans = []) {
 
   const [plan, setPlan] = useState<PlanWithUIState[]>(initialPlans);
+
+  const resetPlan = useCallback((newPlan:Plan[]) => {
+    setPlan(newPlan); 
+  }, []);
 
   const addPlan = (selectedPlanType:string, date: Date ) => {
     if (!selectedPlanType) return;
@@ -101,8 +106,15 @@ export function usePlanBuilder(initialPlans = []) {
     setPlan([]);
   }
 
+  const updatePlanStatus = (planId: number) => {
+    setPlan((prev) =>
+      prev.map((p) => (p.id === planId ? { ...p, status: 'completed' } : p))
+    );
+  }
+
   return {
     plan,
+    resetPlan,
     addPlan,
     deletePlan,
     addSubTask,
@@ -111,5 +123,6 @@ export function usePlanBuilder(initialPlans = []) {
     toggleExpand,
     toggleSubTaskCompleted,
     cleanPlan,
+    updatePlanStatus,
   };
 }

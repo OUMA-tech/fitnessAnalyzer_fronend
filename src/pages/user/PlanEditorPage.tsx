@@ -1,11 +1,20 @@
-import { useMonthlyPlans } from "../../features/user/trainPlanAPI";
+import { useMonthlyPlans } from "../../hooks/useDurationPlans";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { Box, Card, CardContent, Skeleton, Typography, TextField, IconButton, Checkbox } from '@mui/material';
+import { Box, Card, CardContent, Skeleton, Typography, TextField, IconButton, Checkbox, Select, MenuItem } from '@mui/material';
 import { Edit, Save } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { Plan } from "../../types/trainPLan";
 import Layout from "../../components/common/Layout";
+import { usePlanBuilder } from "../../hooks/usePlanBuilder";
+
+export enum PlanType {
+  Ride = '🚴‍♂️ Ride',
+  Run = '🏃‍♀️ Run',
+  Swim = '🏊‍♂️ Swim',
+  Strength = '🏋️‍♂️ Weight Training',
+  Yoga = '🧘‍♂️ Yoga',
+}
 
 
 function PlanEditor() {
@@ -14,14 +23,24 @@ function PlanEditor() {
 
   const [editId, setEditId] = useState<number | null>(null);
   const [editedTitle, setEditedTitle] = useState<string>('');
-  const [monthlyPlanState, setMonthlyPlanState] = useState<Plan[]>([]);
+  // const [monthlyPlanState, setMonthlyPlanState] = useState<Plan[]>([]);
   const [localPlans, setLocalPlans] = useState<Plan[]>([]);
+  const [selectedTaskType, setSelectedTaskType] = useState<PlanType | ''>('');
 
-  useEffect(()=>{
-    if(monthlyPlans){
-      setMonthlyPlanState((monthlyPlans))
+
+
+  const {
+    plan,
+    resetPlan,
+    toggleSubTaskCompleted,
+  } = usePlanBuilder();
+
+  useEffect(() => {
+    if (monthlyPlans) {
+      resetPlan(monthlyPlans); 
     }
-  },[monthlyPlans]);
+  }, [monthlyPlans]);
+  
 
   const handleEditClick = (planId: number, currentTitle: string) => {
     setEditId(planId);
@@ -34,22 +53,7 @@ function PlanEditor() {
     setEditId(null);
   };
 
-  const toggleSubTaskCompleted = (taskId: number, subTaskId: number) => {
-    setMonthlyPlanState(prev =>
-      prev.map(task =>
-        task.id === taskId
-          ? {
-              ...task,
-              subTasks: task.subTasks.map(sub =>
-                sub.id === subTaskId
-                  ? { ...sub, completed: !sub.completed }
-                  : sub
-              ),
-            }
-          : task
-      )
-    );
-  };
+
   const handleSubtaskContentChange = (planId: number, subtaskId: number, newValue: string) => {
     setLocalPlans((prevPlans) =>
       prevPlans.map((plan) =>
@@ -66,7 +70,9 @@ function PlanEditor() {
       )
     );
   };
+  
 
+  
   return (
     <div>
       <Layout />
@@ -76,7 +82,7 @@ function PlanEditor() {
         <Box>
               <Typography variant="h5" gutterBottom>📅 Monthly Plans</Typography>
 
-              {monthlyPlanState.map((plan:Plan) => (
+              {plan.map((plan:Plan) => (
                 <Card key={plan.id} sx={{ mb: 2 }}>
                   <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     {/* 第一行：日期、标题 + 编辑按钮 */}
@@ -86,12 +92,23 @@ function PlanEditor() {
                           {dayjs(plan.date).format('YYYY-MM-DD')}
                         </Typography>
                         {editId === plan.id ? (
-                          <TextField
-                            value={editedTitle}
-                            onChange={(e) => setEditedTitle(e.target.value)}
-                            size="small"
-                            sx={{ mt: 1 }}
-                          />
+                          <Select
+                          value={selectedTaskType}
+                          onChange={e => setSelectedTaskType(e.target.value as PlanType)}
+                          displayEmpty
+                          fullWidth
+                        >
+                          <MenuItem value="">
+                            <em>{plan.title}</em>
+                          </MenuItem>
+                          {Object.values(PlanType).map(type => (
+                            
+                            <MenuItem key={type} value={type}>
+                              {type}
+                            </MenuItem>
+                            
+                          ))}
+                        </Select>
                         ) : (
                           <Typography variant="h6">{plan.title}</Typography>
                         )}

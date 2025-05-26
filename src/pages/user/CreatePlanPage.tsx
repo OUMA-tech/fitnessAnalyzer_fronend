@@ -20,11 +20,9 @@ import { SaveTrainPlan } from '../../features/user/trainPlanAPI';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { handleAxiosError } from '../../utils/handleAxiosError';
-import utc from 'dayjs/plugin/utc';
 import { Plan } from '../../types/trainPLan';
 import { usePlanBuilder } from '../../hooks/usePlanBuilder';
 
-dayjs.extend(utc);
 
 export enum TaskType {
   Ride = '🚴‍♂️ Ride',
@@ -36,11 +34,11 @@ export enum TaskType {
 
 
 
-const TrainingEditor = () => {
-  // const [tasks, setTasks] = useState<PlanWithUIState[]>([]);
+const CreatePlan = () => {
   const [selectedTaskType, setSelectedTaskType] = useState<TaskType | ''>('');
   const [subTaskInputs, setSubTaskInputs] = useState<Record<number, string>>({});
-  const today = dayjs().startOf('day').utc().toDate();
+  const today = dayjs().startOf('day').toDate();
+  console.log(today);
 
   const {
     plan,
@@ -61,7 +59,7 @@ const TrainingEditor = () => {
   };
 
   const handleDateChange = (planId: number, newDateStr: string) => {
-    const newDate =  dayjs(newDateStr).startOf('day').utc().toDate();
+    const newDate =  dayjs(newDateStr).startOf('day').toDate();
     dateChange(planId, newDate);
   };
 
@@ -100,7 +98,7 @@ const TrainingEditor = () => {
     <>
     <Layout />
       <Box className="p-4 max-w-xl mx-auto space-y-4">
-        <Box display="flex" gap={2}>
+        <Box display="flex" gap={2} mt={1} ml={1} mr={1}>
           <Select
             value={selectedTaskType}
             onChange={e => setSelectedTaskType(e.target.value as TaskType)}
@@ -229,4 +227,4 @@ const TrainingEditor = () => {
   );
 }
 
-export default TrainingEditor;
+export default CreatePlan;

@@ -11,67 +11,40 @@ import {
 import { CheckCircle } from '@mui/icons-material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-// import dayjs from 'dayjs';
-import { useState } from 'react';
 import Layout from '../../components/common/Layout';
 import { blue } from '@mui/material/colors';
-import { useTodayPlanFromWeekly } from '../../features/user/trainPlanAPI';
+import { useTodayPlanFromWeekly } from '../../hooks/useDurationPlans';
 import { toast } from 'react-toastify';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import { updatePlan } from '../../features/user/trainPlanAPI';
 import { useEffect } from 'react';
+import { usePlanBuilder } from '../../hooks/usePlanBuilder';
 
-interface PlanWithUIState extends Plan {
-  expanded?: boolean; 
-}
+
 
 const TodayAllPage = () => {
 
-  const [todaysPlan, setTodaysPlan] = useState<PlanWithUIState[]>([]);
   const { data: todayPlan } = useTodayPlanFromWeekly();
   console.log(todayPlan);
+  
+  const {
+    plan,
+    resetPlan,
+    toggleExpand,
+    toggleSubTaskCompleted,
+    updatePlanStatus,
+  } = usePlanBuilder();
+
   useEffect(() => {
     if (todayPlan) {
-      setTodaysPlan(todayPlan);
+      resetPlan(todayPlan); 
     }
   }, [todayPlan]);
-  console.log(todaysPlan);
-  
-  const toggleExpand = (taskId: number) => {
-    setTodaysPlan(prev =>
-      prev.map(task =>
-        task.id === taskId ? { ...task, expanded: !task.expanded } : task
-      )
-    );
-  };
-
-  const toggleSubTaskCompleted = (taskId: number, subTaskId: number) => {
-    setTodaysPlan(prev =>
-      prev.map(task =>
-        task.id === taskId
-          ? {
-              ...task,
-              subTasks: task.subTasks.map(sub =>
-                sub.id === subTaskId
-                  ? { ...sub, completed: !sub.completed }
-                  : sub
-              ),
-            }
-          : task
-      )
-    );
-  };
 
   const handleUpdatePlan = async (plan:Plan) => {
     try {
-      await updatePlan(plan); // 调用后端 API 修改状态
+      await updatePlan(plan); 
       toast.success('Updated successfully!');
-      // const stored = todaysPlan.map((plan:Plan)=>({
-      //   ...plan,
-      //   date: plan.date.toISOString(),
-      // })) 
-      // dispatch(setWeeklyPlans(stored));
-      // dispatch(updatePlanStatusInStore(planId));
   
     } catch (err) {
       handleAxiosError(err, 'Failed to update plan');
@@ -80,13 +53,10 @@ const TodayAllPage = () => {
 
   const handleMarkAsCompleted = async (plan: Plan) => {
     try {
-      const updatedPlan:Plan = { ...plan, status: 'completed' };
-      console.log(updatedPlan);
+      const updatedPlan = { ...plan, status: 'completed' };
       const success = await updatePlan(updatedPlan);
       if(success){
-        setTodaysPlan((prev) =>
-          prev.map((p) => (p.id === plan.id ? { ...p, status: 'completed' } : p))
-        );
+        updatePlanStatus(plan.id);
       }
     } catch (err) {
       console.error('Failed to mark plan as completed:', err);
@@ -99,11 +69,8 @@ const TodayAllPage = () => {
     <Box>
       <Layout />
       <Box sx={{ p: 2 }} color={blue}>
-        {/* <Typography variant="h4" gutterBottom>
-          Today’s Training Plan
-        </Typography> */}
         
-        {todaysPlan.length === 0 ? (
+        {plan.length === 0 ? (
           <Box
           display="flex"
           flexDirection="column"
@@ -118,7 +85,7 @@ const TodayAllPage = () => {
             Enjoy your free time or add a new plan.
           </Typography>
         </Box>
-          ) : (todaysPlan.map(plan => (
+          ) : (plan.map(plan => (
           <Paper key={plan.id} className="p-3 space-y-8 shadow" sx={{ mt: 2 }}>
             <Box
               display="flex"
