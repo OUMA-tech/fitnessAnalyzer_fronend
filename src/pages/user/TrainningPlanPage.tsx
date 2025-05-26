@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -22,6 +22,7 @@ import dayjs from 'dayjs';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import utc from 'dayjs/plugin/utc';
 import { Plan } from '../../types/trainPLan';
+import { usePlanBuilder } from '../../hooks/usePlanBuilder';
 
 dayjs.extend(utc);
 
@@ -33,116 +34,59 @@ export enum TaskType {
   Yoga = '🧘‍♂️ Yoga',
 }
 
-interface PlanWithUIState extends Plan {
-  expanded?: boolean; 
-}
 
 
 const TrainingEditor = () => {
-  const [tasks, setTasks] = useState<PlanWithUIState[]>([]);
+  // const [tasks, setTasks] = useState<PlanWithUIState[]>([]);
   const [selectedTaskType, setSelectedTaskType] = useState<TaskType | ''>('');
   const [subTaskInputs, setSubTaskInputs] = useState<Record<number, string>>({});
   const today = dayjs().startOf('day').utc().toDate();
 
-
+  const {
+    plan,
+    addPlan,
+    deletePlan,
+    addSubTask,
+    deleteSubTask,
+    dateChange,
+    toggleExpand,
+    toggleSubTaskCompleted,
+    cleanPlan,
+  } = usePlanBuilder();
   
   const handleAddTask = () => {
     if (!selectedTaskType) return;
-    const newTask: PlanWithUIState = {
-      id: Date.now(),
-      status: 'draft',
-      title: selectedTaskType,
-      date: today,
-      subTasks: [],
-      expanded: false,
-    };
-    setTasks(prev => [...prev, newTask]);
+    addPlan(selectedTaskType, today);
     setSelectedTaskType('');
   };
 
-  const handleDateChange = (taskId: number, newDateStr: string) => {
+  const handleDateChange = (planId: number, newDateStr: string) => {
     const newDate =  dayjs(newDateStr).startOf('day').utc().toDate();
-  
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId
-          ? { ...task, date: newDate }
-          : task
-      )
-    );
+    dateChange(planId, newDate);
   };
 
-  const handleDeleteTask = (taskId: number) => {
-    setTasks(tasks => tasks.filter(task => task.id !== taskId));
+  const handleDeletePlan = (planId: number) => {
+    deletePlan(planId);
   };
 
-  const handleAddSubTask = (taskId: number) => {
-    const content = subTaskInputs[taskId];
+  const handleAddSubTask = (planId: number) => {
+    const content = subTaskInputs[planId];
     if (!content?.trim()) return;
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === taskId
-          ? {
-              ...task,
-              subTasks: [
-                ...task.subTasks,
-                {
-                  id: Date.now(),
-                  content: content.trim(),
-                  completed: false,
-                },
-              ],
-            }
-          : task
-      )
-    );
-    setSubTaskInputs(prev => ({ ...prev, [taskId]: '' }));
+    addSubTask(planId, content);
+    setSubTaskInputs(prev => ({ ...prev, [planId]: '' }));
   };
 
-  const handleDeleteSubTask = (taskId: number, subTaskId: number) => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === taskId
-          ? {
-              ...task,
-              subTasks: task.subTasks.filter(sub => sub.id !== subTaskId),
-            }
-          : task
-      )
-    );
+  const handleDeleteSubTask = (planId: number, subTaskId: number) => {
+    deleteSubTask(planId,subTaskId);
   };
   
 
-  const toggleExpand = (taskId: number) => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === taskId ? { ...task, expanded: !task.expanded } : task
-      )
-    );
-  };
-
-  const toggleSubTaskCompleted = (taskId: number, subTaskId: number) => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === taskId
-          ? {
-              ...task,
-              subTasks: task.subTasks.map(sub =>
-                sub.id === subTaskId
-                  ? { ...sub, completed: !sub.completed }
-                  : sub
-              ),
-            }
-          : task
-      )
-    );
-  };
 
   const handleSaveTrainPlan = async (tasks:Plan[]) => {
     if (tasks.length) {
       try {
         await SaveTrainPlan(tasks);
-        setTasks([]);
+        cleanPlan();
         toast.success('Training plan saved success ✅');
       } catch (err) {
         handleAxiosError(err, 'Failed to sync training plan ❌');
@@ -184,7 +128,7 @@ const TrainingEditor = () => {
           </Button>
         </Box>
 
-        {tasks.map(task => (
+        {plan.map(task => (
           <Paper key={task.id} className="p-3 space-y-8 shadow" sx={{ mt: 1 }}>
             <Box
               display="flex"
@@ -268,7 +212,7 @@ const TrainingEditor = () => {
                 </Button>
               </Box>
               <Box mb={1}  mr={2} display="flex" justifyContent="flex-end">
-                <IconButton aria-label="delete" onClick={()=>handleDeleteTask(task.id)}>
+                <IconButton aria-label="delete" onClick={()=>handleDeletePlan(task.id)}>
                   <DeleteIcon />
                 </IconButton>
               </Box>
@@ -277,7 +221,7 @@ const TrainingEditor = () => {
         ))}
       </Box>
       <Box mt={8} mr={2} display="flex" justifyContent="flex-end">
-        <Button variant="contained" endIcon={<SendIcon />} onClick={()=>handleSaveTrainPlan(tasks)}>
+        <Button variant="contained" endIcon={<SendIcon />} onClick={()=>handleSaveTrainPlan(plan)}>
           SAVE
         </Button>
       </Box>

@@ -1,41 +1,29 @@
 import { Plan } from "../types/trainPLan";
 import { useState } from "react";
-import dayjs from 'dayjs'
 
-export enum PlanType {
-  Ride = '🚴‍♂️ Ride',
-  Run = '🏃‍♀️ Run',
-  Swim = '🏊‍♂️ Swim',
-  Strength = '🏋️‍♂️ Weight Training',
-  Yoga = '🧘‍♂️ Yoga',
-}
+
 
 interface PlanWithUIState extends Plan {
   expanded?: boolean; 
 }
 export function usePlanBuilder(initialPlans = []) {
-  const [plan, setPlan] = useState<PlanWithUIState[]>(initialPlans = []);
-  const [selectedPlanType, setSelectedPlanType] = useState<PlanType | ''>('');
-  const [subTaskInputs, setSubTaskInputs] = useState<Record<number, string>>({});
-  const today = dayjs().startOf('day').utc().toDate();
 
-  const addPlan = () => {
+  const [plan, setPlan] = useState<PlanWithUIState[]>(initialPlans);
+
+  const addPlan = (selectedPlanType:string, date: Date ) => {
     if (!selectedPlanType) return;
     const newPlan: PlanWithUIState = {
       id: Date.now(),
       status: 'draft',
       title: selectedPlanType,
-      date: today,
+      date: date,
       subTasks: [],
       expanded: false,
     };
     setPlan(prev => [...prev, newPlan]);
-    setSelectedPlanType('');
   };
 
-  const dateChange = (planId: number, newDateStr: string) => {
-    const newDate =  dayjs(newDateStr).startOf('day').utc().toDate();
-
+  const dateChange = (planId: number, newDate: Date) => {
     setPlan(prevPlans =>
       prevPlans.map(plan =>
         plan.id === planId
@@ -49,9 +37,7 @@ export function usePlanBuilder(initialPlans = []) {
     setPlan(plans => plans.filter(plan => plan.id !== planId));
   };
 
-  const addSubTask = (planId: number) => {
-    const content = subTaskInputs[planId];
-    if (!content?.trim()) return;
+  const addSubTask = (planId: number, content: string) => {
     setPlan(prev =>
       prev.map(plan =>
         plan.id === planId
@@ -69,7 +55,7 @@ export function usePlanBuilder(initialPlans = []) {
           : plan
       )
     );
-    setSubTaskInputs(prev => ({ ...prev, [planId]: '' }));
+
   };
 
   const deleteSubTask = (planId: number, subTaskId: number) => {
@@ -111,6 +97,10 @@ export function usePlanBuilder(initialPlans = []) {
     );
   };
 
+  const cleanPlan = () => {
+    setPlan([]);
+  }
+
   return {
     plan,
     addPlan,
@@ -120,5 +110,6 @@ export function usePlanBuilder(initialPlans = []) {
     dateChange,
     toggleExpand,
     toggleSubTaskCompleted,
+    cleanPlan,
   };
 }
