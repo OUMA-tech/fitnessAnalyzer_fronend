@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Box } from '@mui/material';
 import { useState } from 'react';
 import StravaConnectButton from '../../components/common/AuthStrava';
-import { getCookies } from '../../features/user/profileAPI';
+// import { getCookies } from '../../features/user/profileAPI';
 
 export interface User {
   id: string;
@@ -44,8 +44,8 @@ const LoginPage = () => {
     dispatch(setUser(userData));
     // 2. save to localStorage
     localStorage.setItem('auth', JSON.stringify(userData));
-    //3. get avatar cookies
-    await getCookies();
+    // //3. get avatar cookies
+    // await getCookies();
 
   };
 

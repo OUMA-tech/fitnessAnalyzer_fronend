@@ -10,7 +10,8 @@ export default function StravaConnectButton({ userToken }: { userToken: string }
   const handleSkip = () => {
     navigate('/dashboard');
   }
-  const stravaAuthUrl = `https://www.strava.com/oauth/authorize?client_id=${STRAVA_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=${SCOPE}&state=${userToken}`;
+  const stravaAuthUrl = `https://www.strava.com/oauth/authorize?client_id=${STRAVA_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=${SCOPE}&state=${userToken}&approval_prompt=force`;
+  console.log(stravaAuthUrl);
   return (
     <Box
       display="flex"
