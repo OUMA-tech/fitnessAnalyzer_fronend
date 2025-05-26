@@ -8,18 +8,18 @@ import {
   Paper,
   Button,
 } from '@mui/material';
+import { CheckCircle } from '@mui/icons-material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 // import dayjs from 'dayjs';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Layout from '../../components/common/Layout';
 import { blue } from '@mui/material/colors';
-import { RootState } from '../../store/store';
+import { useTodayPlanFromWeekly } from '../../features/user/trainPlanAPI';
 import { toast } from 'react-toastify';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import { updatePlan } from '../../features/user/trainPlanAPI';
-import dayjs from 'dayjs';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 interface PlanWithUIState extends Plan {
   expanded?: boolean; 
@@ -28,30 +28,13 @@ interface PlanWithUIState extends Plan {
 const TodayAllPage = () => {
 
   const [todaysPlan, setTodaysPlan] = useState<PlanWithUIState[]>([]);
-
-  const planFromRedux = useSelector((state: RootState) => state.plans.weeklyplans);
-
+  const { data: todayPlan } = useTodayPlanFromWeekly();
+  console.log(todayPlan);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (planFromRedux && planFromRedux.length > 0) {
-          const restored = planFromRedux.filter((task) => dayjs(task.date).isSame(dayjs(), 'day'));
-          const todayPlans = restored.map(plan => ({
-            ...plan,
-            date: new Date(plan.date),
-          }));
-          setTodaysPlan(todayPlans);
-          return;
-        }
-        
-      } catch (err) {
-        console.error('Failed to fetch today\'s plan:', err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
+    if (todayPlan) {
+      setTodaysPlan(todayPlan);
+    }
+  }, [todayPlan]);
   console.log(todaysPlan);
   
   const toggleExpand = (taskId: number) => {
@@ -92,6 +75,22 @@ const TodayAllPage = () => {
   
     } catch (err) {
       handleAxiosError(err, 'Failed to update plan');
+    }
+  };
+
+  const handleMarkAsCompleted = async (plan: Plan) => {
+    try {
+      const updatedPlan:Plan = { ...plan, status: 'completed' };
+      console.log(updatedPlan);
+      const success = await updatePlan(updatedPlan);
+      if(success){
+        setTodaysPlan((prev) =>
+          prev.map((p) => (p.id === plan.id ? { ...p, status: 'completed' } : p))
+        );
+      }
+    } catch (err) {
+      console.error('Failed to mark plan as completed:', err);
+      toast.error('Failed to update plan');
     }
   };
 
@@ -150,34 +149,44 @@ const TodayAllPage = () => {
 
             <Collapse in={plan.expanded}>
               {plan.subTasks.length === 0 ? (
-                <Typography variant="body2" color="textSecondary" pl={2}>
-                  No subtasks
-                </Typography>
+                <Button
+                  variant="contained"
+                  color={plan.status === 'completed' ? 'success' : 'primary'}
+                  startIcon={<CheckCircle />}
+                  onClick={() => handleMarkAsCompleted(plan)}
+                  disabled={plan.status === 'completed'}
+                  sx={{ ml: 2 }}
+                >
+                  {plan.status === 'completed' ? 'Completed' : 'Mark as Completed'}
+                </Button>
               ) : (
-                plan.subTasks.map(sub => (
-                  <Box key={sub.id} display="flex" alignItems="center" pl={2}>
-                    <Checkbox
-                      checked={sub.completed}
-                      onChange={() => toggleSubTaskCompleted(plan.id, sub.id)}
-                    />
-                    <Typography
-                      variant="body2"
-                      style={{
-                        textDecoration: sub.completed ? 'line-through' : 'none',
-                      }}
-                    >
-                      {sub.content}
-                    </Typography>
-                  </Box>
-                ))
-              )}
-              <Button
+                <>
+                  {plan.subTasks.map(sub => (
+                    <Box key={sub.id} display="flex" alignItems="center" pl={2}>
+                      <Checkbox
+                        checked={sub.completed}
+                        onChange={() => toggleSubTaskCompleted(plan.id, sub.id)}
+                      />
+                      <Typography
+                        variant="body2"
+                        style={{
+                          textDecoration: sub.completed ? 'line-through' : 'none',
+                        }}
+                      >
+                        {sub.content}
+                      </Typography>
+                    </Box>
+                  ))}
+                <Button
                 variant="outlined"
                 size="small"
                 onClick={() => handleUpdatePlan(plan)}
               >
                 Update Status
               </Button>
+              </>
+              )}
+
             </Collapse>
           </Paper>
         )))}

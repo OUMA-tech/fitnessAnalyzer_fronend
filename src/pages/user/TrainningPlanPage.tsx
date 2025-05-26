@@ -16,14 +16,13 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Layout from '../../components/common/Layout';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import { SynchronizedTrainPlan } from '../../features/user/trainPlanAPI';
+import { SaveTrainPlan } from '../../features/user/trainPlanAPI';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import utc from 'dayjs/plugin/utc';
 import { Plan } from '../../types/trainPLan';
-import { useDispatch } from 'react-redux';
-import { clearWeeklyPlans } from '../../slices/planSlice';
+
 dayjs.extend(utc);
 
 export enum TaskType {
@@ -39,37 +38,14 @@ interface PlanWithUIState extends Plan {
 }
 
 
-export default function TrainingEditor() {
+const TrainingEditor = () => {
   const [tasks, setTasks] = useState<PlanWithUIState[]>([]);
   const [selectedTaskType, setSelectedTaskType] = useState<TaskType | ''>('');
   const [subTaskInputs, setSubTaskInputs] = useState<Record<number, string>>({});
   const today = dayjs().startOf('day').utc().toDate();
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const stored = localStorage.getItem('training-tasks');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        const restored = parsed.map((task: any) => ({
-          ...task,
-          date: new Date(task.date), // 👈 转换成 Date 对象
-        }));
-        setTasks(restored);
-      } catch (e) {
-        console.error('parse error:', e);
-      }
-    }
-  }, []);
 
-  useEffect(() => {
-    if (tasks.length!==0) {
-      console.log('Saving tasks...');
-      // console.log(tasks);
-      localStorage.setItem('training-tasks', JSON.stringify(tasks));
-    }
-  }, [tasks]);
-
+  
   const handleAddTask = () => {
     if (!selectedTaskType) return;
     const newTask: PlanWithUIState = {
@@ -162,12 +138,10 @@ export default function TrainingEditor() {
     );
   };
 
-  const handleSynchronizTrainPlan = async (tasks:Plan[]) => {
+  const handleSaveTrainPlan = async (tasks:Plan[]) => {
     if (tasks.length) {
       try {
-        const res = await SynchronizedTrainPlan(tasks);
-        console.log(res);
-        dispatch(clearWeeklyPlans());
+        await SaveTrainPlan(tasks);
         setTasks([]);
         toast.success('Training plan saved success ✅');
       } catch (err) {
@@ -303,10 +277,12 @@ export default function TrainingEditor() {
         ))}
       </Box>
       <Box mt={8} mr={2} display="flex" justifyContent="flex-end">
-        <Button variant="contained" endIcon={<SendIcon />} onClick={()=>handleSynchronizTrainPlan(tasks)}>
+        <Button variant="contained" endIcon={<SendIcon />} onClick={()=>handleSaveTrainPlan(tasks)}>
           SAVE
         </Button>
       </Box>
     </>
   );
 }
+
+export default TrainingEditor;

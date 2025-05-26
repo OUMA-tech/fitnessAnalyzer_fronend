@@ -2,7 +2,7 @@ export interface Plan {
   id: number;
   title: string;
   date: Date;
-  status: 'draft' | 'planned' | 'completed';
+  status: string;
   subTasks: SubTask[];
 }
 export interface SubTask {

@@ -13,6 +13,7 @@ const HistoryRecordsPage = lazy(()=>import('./pages/user/HistoryRecords'));
 const TrainingPlanPage = lazy(()=>import('./pages/user/TrainningPlanPage'));
 const TodayAllPage = lazy(()=>import('./pages/user/TodatAllPage'));
 const ProfilePage = lazy(()=>import('./pages/user/ProfilePage'));
+const PlanEditor = lazy(()=> import('./pages/user/PlanEditorPage'));
 
 function AppRoutes() {
   return (
@@ -26,6 +27,7 @@ function AppRoutes() {
       <Route path='/train-plan' element={<TrainingPlanPage />} />
       <Route path='/todayAll' element={<TodayAllPage />} />
       <Route path='/profile' element={<ProfilePage />} />
+      <Route path='/editPlan' element={<PlanEditor />} />
     </Routes>
       <ToastContainer position="top-center" autoClose={2000} />
     </Suspense>
