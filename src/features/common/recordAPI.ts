@@ -2,7 +2,7 @@ import axios from "axios";
 import { Record } from '../../types/record';
 import { store } from '../../store/store'
 
-const API_URL = 'http://localhost:5000/api/records';
+const API_URL = 'https://fitnessanalyzer-backend.onrender.com/api/records';
 const StravaData_URL = 'https://fitnessanalyzer-backend.onrender.com/api/strava/records'
 
 
