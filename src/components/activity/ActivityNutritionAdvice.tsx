@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Typography, Box, LinearProgress, Tooltip } from '@mui/material';
+import { Card, CardContent, CardHeader, Typography, Box, LinearProgress } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { useQuery } from '@tanstack/react-query';
 import { getActivityNutritionAdvice } from '../../services/nutritionService';

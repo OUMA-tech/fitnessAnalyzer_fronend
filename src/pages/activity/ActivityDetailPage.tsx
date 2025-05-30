@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
 import Grid from '@mui/material/GridLegacy';
 import NutritionAdvice from '../../components/activity/ActivityNutritionAdvice';
 import Layout from '../../components/common/Layout';
