@@ -8,9 +8,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { Dayjs } from 'dayjs';
 import WeeklyPlans from '../../components/common/WeeklyPlans';
-
+import NutritionOverview from '../../components/dashboard/NutritionOverview';
 import { handleAxiosError } from '../../utils/handleAxiosError';
 import TodaysPlan from '../../components/common/TodaysPlan';
+import Grid from '@mui/material/GridLegacy';
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -36,6 +37,9 @@ const DashboardPage = () => {
     <div className="p-6 space-y-6">
       <Layout/>
       <h1 className="text-2xl font-bold">🏋️ Welcome back, {user.username}!</h1>
+      <Grid item xs={12} lg={4} mb={2}>
+        <NutritionOverview />
+      </Grid>
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
