@@ -37,9 +37,6 @@ const DashboardPage = () => {
     <div className="p-6 space-y-6">
       <Layout/>
       <h1 className="text-2xl font-bold">🏋️ Welcome back, {user.username}!</h1>
-      <Grid item xs={12} lg={4} mb={2}>
-        <NutritionOverview />
-      </Grid>
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
@@ -83,7 +80,9 @@ const DashboardPage = () => {
           )}
           </>
         )}
-
+      <Grid item xs={12} lg={4} mb={2}>
+        <NutritionOverview />
+      </Grid>
     </div>
   )
 };
