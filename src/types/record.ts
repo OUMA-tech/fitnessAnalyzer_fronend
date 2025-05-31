@@ -1,9 +1,29 @@
 // types.ts
+const ActivityTypes = {
+  ALL: '',
+  RUN: 'Run',
+  RIDE: 'Ride',
+  SWIM: 'Swim',
+  WALK: 'Walk',
+  HIKE: 'Hike',
+  WORKOUT: 'Workout'
+} as const;
+
+export enum ActivityType {
+  ALL = '',
+  RUN = 'Run',
+  RIDE = 'Ride',
+  SWIM = 'Swim',
+  WALK = 'Walk',
+  HIKE = 'Hike',
+  WORKOUT = 'Workout'
+}
+
 export interface Record {
   _id?: string;  // MongoDB ID
   id: string;    // Regular ID
   name: string;
-  type: string;
+  type: ActivityType;  // 使用枚举类型
   distance: number;
   startDate: string;
   movingTime: number;
@@ -23,6 +43,5 @@ export interface PaginatedResponse {
 export interface RecordFilters {
   page?: number;
   pageSize?: number;
-  category?: string;
+  category?: ActivityType;  // 使用枚举类型
 }
-

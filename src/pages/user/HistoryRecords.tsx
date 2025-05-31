@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Container, 
   Typography, 
@@ -8,74 +8,85 @@ import {
   Alert,
   Collapse,
   IconButton,
-  Pagination
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import Grid from '@mui/material/GridLegacy';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { fetchRecords, fetchStravaRecords } from '../../features/common/recordAPI'; // 假设封装了 axios 请求
-import { Record, RecordFilters } from '../../types/record';
+import { fetchRecords, fetchStravaRecords } from '../../features/common/recordAPI';
+import { Record, RecordFilters, ActivityType } from '../../types/record';
 import Layout from '../../components/common/Layout';
 import ActivityNutritionAdvice from '../../components/activity/ActivityNutritionAdvice';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+
+const ITEMS_PER_PAGE = 10;
 
 const HistoryRecordsPage = () => {
-  const [records, setRecords] = useState<Record[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [filters, setFilters] = useState<RecordFilters>({
-    page: 1,
-    pageSize: 10
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedType, setSelectedType] = useState<ActivityType>(ActivityType.ALL);
+  const queryClient = useQueryClient();
+
+  // 使用 React Query 获取数据
+  const { data: allRecords = [], isLoading, error: queryError } = useQuery({
+    queryKey: ['records'],
+    queryFn: async () => {
+      const response = await fetchRecords({ page: 1, pageSize: 1000 }); // 获取所有记录
+      return response.records;
+    }
   });
-  const [totalPages, setTotalPages] = useState(1);
 
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetchRecords(filters);
-      console.log('Raw records data:', res);
-      setRecords(res.records);
-      setTotalPages(res.totalPages);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch records');
-    } finally {
-      setLoading(false);
+  // 使用 useMemo 进行本地筛选和分页
+  const { filteredRecords, totalPages } = useMemo(() => {
+    console.log('allRecords', allRecords);
+    console.log('selectedType', selectedType);
+    // 先按类型筛选
+    const filtered = selectedType === ActivityType.ALL
+      ? allRecords
+      : allRecords.filter(record => record.type === selectedType);
+
+    // 计算总页数
+    const total = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+    // 分页
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedRecords = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+    return {
+      filteredRecords: paginatedRecords,
+      totalPages: total
+    };
+  }, [allRecords, selectedType, currentPage]);
+
+  // Strava 数据同步
+  const { mutate: syncStravaData, isPending: isSyncingStrava } = useMutation({
+    mutationFn: fetchStravaRecords,
+    onSuccess: (newRecords) => {
+      // 更新缓存中的数据
+      queryClient.setQueryData(['records'], (oldRecords: Record[] = []) => {
+        const combinedRecords = [...oldRecords, ...newRecords];
+        // 去重，以 id 为标准
+        return Array.from(new Map(combinedRecords.map(record => [record.id, record])).values());
+      });
     }
-  };
-
-  const fetchStravaData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetchStravaRecords();
-      console.log('Fetched Strava records:', res);
-      setRecords(res);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch records');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, [filters]);
+  });
 
   const handleExpandClick = (recordId: string) => {
-    console.log('Clicked record ID:', recordId);
-    console.log('Current expandedId:', expandedId);
-    console.log('Record IDs in list:', records.map(r => r.id));
-    
-    if (expandedId === recordId) {
-      setExpandedId(null);
-    } else {
-      setExpandedId(recordId);
-    }
+    setExpandedId(expandedId === recordId ? null : recordId);
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
-    setFilters(prev => ({ ...prev, page }));
+    setCurrentPage(page);
+  };
+
+  const handleTypeChange = (event: any) => {
+    setSelectedType(event.target.value);
+    setCurrentPage(1); // 重置到第一页
   };
 
   return (
@@ -85,96 +96,127 @@ const HistoryRecordsPage = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5" sx={{mt:2}}>Your Activity Records</Typography>
         <Box>
-          <Button onClick={loadData} variant="outlined" sx={{ mr: 1 }}>Refresh</Button>
-          <Button onClick={fetchStravaData} variant="outlined">Fetch Strava Data</Button>
+          <Button 
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['records'] })} 
+            variant="outlined" 
+            sx={{ mr: 1 }}
+          >
+            Refresh
+          </Button>
+          <Button 
+            onClick={() => syncStravaData()} 
+            variant="outlined"
+            disabled={isSyncingStrava}
+          >
+            {isSyncingStrava ? 'Syncing...' : 'Fetch Strava Data'}
+          </Button>
         </Box>
       </Box>
 
-      {loading && <CircularProgress />}
+      <Box mb={3}>
+        <FormControl fullWidth>
+          <InputLabel id="activity-type-label">Activity Type</InputLabel>
+          <Select
+            labelId="activity-type-label"
+            value={selectedType}
+            onChange={handleTypeChange}
+            label="Activity Type"
+            sx={{ minWidth: 200 }}
+          >
+            <MenuItem value={ActivityType.ALL}>
+              <em>All Activities</em>
+            </MenuItem>
+            {Object.values(ActivityType).map((type) => (
+              type !== ActivityType.ALL && (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              )
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
-      {error && <Alert severity="error">{error}</Alert>}
+      {isLoading && <CircularProgress />}
 
-      {!loading && !error && records.length === 0 && (
+      {queryError && (
+        <Alert severity="error">
+          {queryError instanceof Error ? queryError.message : 'Failed to fetch records'}
+        </Alert>
+      )}
+
+      {!isLoading && !queryError && filteredRecords.length === 0 && (
         <Typography>No activity data found.</Typography>
       )}
 
-      {!loading && !error && (
+      {!isLoading && !queryError && (
         <Box display="flex" flexDirection="column" gap={2} mt={2}>
-          {records.map((rec, index) => {
-            console.log(`Record ${index}:`, rec);
-            const recordId = rec._id || rec.id;
-            console.log(`Record ${index} ID:`, recordId);
-            
-            return (
-              <Box key={recordId} p={2} border="1px solid #ccc" borderRadius={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box>
-                    <Typography><strong>{rec.name || 'Unnamed Activity'}</strong></Typography>
-                    <Typography>
-                      {rec.type || 'Unknown'}  {
-                        rec.type === 'Ride' || rec.type === 'Run'
-                          ? `- ${((rec.distance || 0) / 1000).toFixed(1)} km`
-                          : rec.type === 'Swim'
-                          ? `- ${(rec.distance || 0).toFixed(0)} m`
-                          : ''
-                      }
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {new Date(rec.startDate).toLocaleString()}
-                    </Typography>
-                  </Box>
-                  <IconButton
-                    onClick={() => {
-                      console.log('Clicking record with ID:', recordId);
-                      handleExpandClick(recordId);
-                    }}
-                    aria-expanded={expandedId === recordId}
-                    aria-label="show more"
-                  >
-                    {expandedId === recordId ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
+          {filteredRecords.map((rec) => (
+            <Box key={rec.id} p={2} border="1px solid #ccc" borderRadius={2}>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Box>
+                  <Typography><strong>{rec.name}</strong></Typography>
+                  <Typography>
+                    {rec.type}  {
+                      rec.type === ActivityType.RIDE || rec.type === ActivityType.RUN
+                        ? `- ${(rec.distance / 1000).toFixed(1)} km`
+                        : rec.type === ActivityType.SWIM
+                        ? `- ${rec.distance.toFixed(0)} m`
+                        : ''
+                    }
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {new Date(rec.startDate).toLocaleString()}
+                  </Typography>
                 </Box>
-
-                <Collapse in={expandedId === recordId} timeout="auto" unmountOnExit>
-                  <Box mt={2}>
-                    <Grid container spacing={3}>
-                      <Grid item xs={12} md={8}>
-                        <Box>
-                          <Typography variant="h6" gutterBottom>Activity Details</Typography>
-                          <Typography>
-                            Duration: {Math.round((rec.movingTime || 0) / 60)} minutes
-                          </Typography>
-                          {rec.averageHeartrate && (
-                            <Typography>
-                              Average Heart Rate: {Math.round(rec.averageHeartrate)} bpm
-                            </Typography>
-                          )}
-                          {rec.totalElevationGain && (
-                            <Typography>
-                              Elevation Gain: {rec.totalElevationGain} m
-                            </Typography>
-                          )}
-                          {rec.calories && (
-                            <Typography>
-                              Calories: {rec.calories} kcal
-                            </Typography>
-                          )}
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12} md={4}>
-                        <ActivityNutritionAdvice activityId={recordId} />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Collapse>
+                <IconButton
+                  onClick={() => handleExpandClick(rec.id)}
+                  aria-expanded={expandedId === rec.id}
+                  aria-label="show more"
+                >
+                  {expandedId === rec.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
               </Box>
-            );
-          })}
+
+              <Collapse in={expandedId === rec.id} timeout="auto" unmountOnExit>
+                <Box mt={2}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={8}>
+                      <Box>
+                        <Typography variant="h6" gutterBottom>Activity Details</Typography>
+                        <Typography>
+                          Duration: {Math.round(rec.movingTime / 60)} minutes
+                        </Typography>
+                        {rec.averageHeartrate && (
+                          <Typography>
+                            Average Heart Rate: {Math.round(rec.averageHeartrate)} bpm
+                          </Typography>
+                        )}
+                        {rec.totalElevationGain && (
+                          <Typography>
+                            Elevation Gain: {rec.totalElevationGain} m
+                          </Typography>
+                        )}
+                        {rec.calories && (
+                          <Typography>
+                            Calories: {rec.calories} kcal
+                          </Typography>
+                        )}
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <ActivityNutritionAdvice activityId={rec.id} />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Collapse>
+            </Box>
+          ))}
           
           <Box display="flex" justifyContent="center" mt={2}>
             <Pagination
               count={totalPages}
-              page={filters.page}
+              page={currentPage}
               onChange={handlePageChange}
               color="primary"
             />
