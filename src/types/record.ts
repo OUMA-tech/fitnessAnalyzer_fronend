@@ -1,14 +1,4 @@
 // types.ts
-const ActivityTypes = {
-  ALL: '',
-  RUN: 'Run',
-  RIDE: 'Ride',
-  SWIM: 'Swim',
-  WALK: 'Walk',
-  HIKE: 'Hike',
-  WORKOUT: 'Workout'
-} as const;
-
 export enum ActivityType {
   ALL = '',
   RUN = 'Run',
@@ -16,7 +6,7 @@ export enum ActivityType {
   SWIM = 'Swim',
   WALK = 'Walk',
   HIKE = 'Hike',
-  WORKOUT = 'Workout'
+  WORKOUT = 'WeightTraining'
 }
 
 export interface Record {
