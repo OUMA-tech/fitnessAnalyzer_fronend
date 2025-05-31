@@ -12,3 +12,17 @@ export interface Record {
   calories?: number;
 }
 
+export interface PaginatedResponse {
+  records: Record[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface RecordFilters {
+  page?: number;
+  pageSize?: number;
+  category?: string;
+}
+

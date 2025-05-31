@@ -7,13 +7,14 @@ import {
   Box, 
   Alert,
   Collapse,
-  IconButton
+  IconButton,
+  Pagination
 } from '@mui/material';
 import Grid from '@mui/material/GridLegacy';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { fetchRecords, fetchStravaRecords } from '../../features/common/recordAPI'; // 假设封装了 axios 请求
-import { Record } from '../../types/record';
+import { Record, RecordFilters } from '../../types/record';
 import Layout from '../../components/common/Layout';
 import ActivityNutritionAdvice from '../../components/activity/ActivityNutritionAdvice';
 
@@ -22,14 +23,20 @@ const HistoryRecordsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<RecordFilters>({
+    page: 1,
+    pageSize: 10
+  });
+  const [totalPages, setTotalPages] = useState(1);
 
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetchRecords();
+      const res = await fetchRecords(filters);
       console.log('Raw records data:', res);
-      setRecords(res);
+      setRecords(res.records);
+      setTotalPages(res.totalPages);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch records');
     } finally {
@@ -53,7 +60,7 @@ const HistoryRecordsPage = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [filters]);
 
   const handleExpandClick = (recordId: string) => {
     console.log('Clicked record ID:', recordId);
@@ -65,6 +72,10 @@ const HistoryRecordsPage = () => {
     } else {
       setExpandedId(recordId);
     }
+  };
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setFilters(prev => ({ ...prev, page }));
   };
 
   return (
@@ -159,6 +170,15 @@ const HistoryRecordsPage = () => {
               </Box>
             );
           })}
+          
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Pagination
+              count={totalPages}
+              page={filters.page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
         </Box>
       )}
     </Container>
