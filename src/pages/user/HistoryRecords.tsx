@@ -160,7 +160,7 @@ const HistoryRecordsPage = () => {
               </Box>
 
               <Collapse in={expandedId === rec.id} timeout="auto" unmountOnExit>
-                <Box mt={2}>
+                <Box display="flex" flexDirection="column" mt={2}>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={8}>
                       <Box>
