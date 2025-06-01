@@ -18,7 +18,7 @@ import Grid from '@mui/material/GridLegacy';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { fetchRecords, fetchStravaRecords } from '../../features/common/recordAPI';
-import { Record, RecordFilters, ActivityType } from '../../types/record';
+import { Record, ActivityType } from '../../types/record';
 import Layout from '../../components/common/Layout';
 import ActivityNutritionAdvice from '../../components/activity/ActivityNutritionAdvice';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -63,18 +63,6 @@ const HistoryRecordsPage = () => {
     };
   }, [allRecords, selectedType, currentPage]);
 
-  // Strava 数据同步
-  const { mutate: syncStravaData, isPending: isSyncingStrava } = useMutation({
-    mutationFn: fetchStravaRecords,
-    onSuccess: (newRecords) => {
-      // 更新缓存中的数据
-      queryClient.setQueryData(['records'], (oldRecords: Record[] = []) => {
-        const combinedRecords = [...oldRecords, ...newRecords];
-        // 去重，以 id 为标准
-        return Array.from(new Map(combinedRecords.map(record => [record.id, record])).values());
-      });
-    }
-  });
 
   const handleExpandClick = (recordId: string) => {
     setExpandedId(expandedId === recordId ? null : recordId);
@@ -102,13 +90,6 @@ const HistoryRecordsPage = () => {
             sx={{ mr: 1 }}
           >
             Refresh
-          </Button>
-          <Button 
-            onClick={() => syncStravaData()} 
-            variant="outlined"
-            disabled={isSyncingStrava}
-          >
-            {isSyncingStrava ? 'Syncing...' : 'Fetch Strava Data'}
           </Button>
         </Box>
       </Box>
