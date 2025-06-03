@@ -8,7 +8,6 @@ export const handleAxiosError = (err: any, fallbackMessage = 'Something went wro
 
   if (status === 401) {
     toast.error('Session expired, please log in again.');
-    // 这里可以重定向或清除 token
     localStorage.clear(); 
     setTimeout(() => {
       window.location.href = '/';

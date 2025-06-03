@@ -18,9 +18,19 @@ export const register = async (userData: {
   username: string;
   email: string;
   password: string;
-}) => {
-  const res = await axios.post(`${apiBaseUrl}/api/auth/register`, userData);
-  return res.data;
+}, verificationCode: string) => {
+  const res = await axios.post(`${apiBaseUrl}/api/auth/register`, {
+    ...userData,
+    verificationCode
+  });
+  return res;
+};
+
+export const sendVerification = async (email: string) => {
+  const res = await axios.post(`${apiBaseUrl}/api/auth/send-verification`, {
+    email
+  });
+  return res;
 };
 
 export const handleLogout = (dispatch: Dispatch,

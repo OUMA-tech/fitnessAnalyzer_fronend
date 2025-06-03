@@ -53,18 +53,18 @@ export const updateProfile = async(key:string, username:string) => {
   return res.data;
 }
 
-export const getCookies = async() => {
-  const token = store.getState().auth.user.token;
-  const res = await axios.get(
-    `${apiBaseUrl}/api/auth/cookie`, 
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true
-    }
-  );
-  console.log(res.data);
-  return res.data;
-}
+// export const getCookies = async() => {
+//   const token = store.getState().auth.user.token;
+//   const res = await axios.get(
+//     `${apiBaseUrl}/api/auth/cookie`, 
+//     {
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json',
+//       },
+//       withCredentials: true
+//     }
+//   );
+//   console.log(res.data);
+//   return res.data;
+// }

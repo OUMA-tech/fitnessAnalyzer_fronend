@@ -24,7 +24,7 @@ import { Plan } from '../../types/trainPLan';
 import { usePlanBuilder } from '../../hooks/usePlanBuilder';
 
 
-export enum TaskType {
+export enum PlanType {
   Ride = '🚴‍♂️ Ride',
   Run = '🏃‍♀️ Run',
   Swim = '🏊‍♂️ Swim',
@@ -35,7 +35,7 @@ export enum TaskType {
 
 
 const CreatePlan = () => {
-  const [selectedTaskType, setSelectedTaskType] = useState<TaskType | ''>('');
+  const [selectedTaskType, setSelectedTaskType] = useState<PlanType | ''>('');
   const [subTaskInputs, setSubTaskInputs] = useState<Record<number, string>>({});
   const today = dayjs().startOf('day').toDate();
   console.log(today);
@@ -101,14 +101,14 @@ const CreatePlan = () => {
         <Box display="flex" gap={2} mt={1} ml={1} mr={1}>
           <Select
             value={selectedTaskType}
-            onChange={e => setSelectedTaskType(e.target.value as TaskType)}
+            onChange={e => setSelectedTaskType(e.target.value as PlanType)}
             displayEmpty
             fullWidth
           >
             <MenuItem value="">
               <em>Add your train plan</em>
             </MenuItem>
-            {Object.values(TaskType).map(type => (
+            {Object.values(PlanType).map(type => (
               
               <MenuItem key={type} value={type}>
                 {type}

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useWeeklyPlans, useTodayPlanFromWeekly } from '../../features/user/trainPlanAPI';
+import { useWeeklyPlans, useTodayPlanFromWeekly } from '../../hooks/useDurationPlans';
 import dayjs from 'dayjs';
 import { Skeleton } from '@mui/material';
 import Layout from '../../components/common/Layout';

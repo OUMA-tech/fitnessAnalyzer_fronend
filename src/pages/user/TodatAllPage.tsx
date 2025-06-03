@@ -57,6 +57,7 @@ const TodayAllPage = () => {
       const success = await updatePlan(updatedPlan);
       if(success){
         updatePlanStatus(plan.id);
+        toast.success('Updated successfully!');
       }
     } catch (err) {
       console.error('Failed to mark plan as completed:', err);
