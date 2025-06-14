@@ -1,13 +1,11 @@
 // src/app/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer, { setUser } from '../slices/authSlice';
-import planReducer from '../slices/planSlice'
 // import cartReducer from '../features/cart/cartSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    plans:planReducer,
     // cart: cartReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
