@@ -16,7 +16,9 @@ function WeeklySummary({weeklyplans}:Props) {
         🎯 Weekly Progress
       </Typography>
       <Typography variant="body1" color="primary">
-        {completedCount === total
+        {total === 0
+          ? "📭 No plans scheduled for this week. Time to set some goals! 📝"
+          :completedCount === total
           ? "🌟 Amazing! You completed all your plans this week!"
           : `✅ ${completedCount} / ${total} plans completed. Keep it up! 💪`}
       </Typography>
