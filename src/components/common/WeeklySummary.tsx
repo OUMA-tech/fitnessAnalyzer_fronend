@@ -28,7 +28,9 @@ function WeeklySummary({weeklyplans}:Props) {
         sx={{ height: 10, borderRadius: 5, mt: 1 }}
       />
       <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-        {completedCount === total
+        { total === 0
+          ? "" 
+          :completedCount === total
           ? "🏅 You’ve earned a rest day!"
           : "🔥 You’re doing great! Stay on track!"}
       </Typography>

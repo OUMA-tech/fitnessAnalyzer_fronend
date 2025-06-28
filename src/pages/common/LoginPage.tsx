@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { LoginForm } from '../../components/common/LoginForm';
-import { setUser } from '../../slices/authSlice';
+import { setUser, setSubscription } from '../../slices/authSlice';
 import { login } from '../../features/common/authAPI';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Box } from '@mui/material';
@@ -16,11 +16,19 @@ export interface User {
   avatar: string;
   isAuthStrava: boolean;
 }
+interface Subscription {
+  id: string;
+  status: 'active' | 'canceled' | 'past_due';
+  planId: string;
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
+}
 
 export interface LoginResponse {
   message: string;
   token: string;
   user: User;
+  subscription: Subscription;
 }
 
 const LoginPage = () => {
@@ -42,6 +50,7 @@ const LoginPage = () => {
     setUserToken(userData.token);
     // 1. save to Redux
     dispatch(setUser(userData));
+    dispatch(setSubscription(res.subscription));
     // 2. save to localStorage
     localStorage.setItem('auth', JSON.stringify(userData));
     // //3. get avatar cookies

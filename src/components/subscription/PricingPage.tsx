@@ -66,11 +66,11 @@ const plans: Plan[] = [
 const faqs = [
   {
     question: 'Can I cancel my subscription anytime?',
-    answer: 'Yes, you can cancel your subscription at any time. You'll continue to have access to Pro features until the end of your billing period.'
+    answer: 'Yes, you can cancel your subscription at any time. You\'ll continue to have access to Pro features until the end of your billing period.'
   },
   {
     question: 'What happens after my free trial?',
-    answer: 'After your free trial ends, you can choose to upgrade to our Pro plan to continue enjoying all features. If you don't upgrade, your account will automatically switch to the Free plan.'
+    answer: 'After your free trial ends, you can choose to upgrade to our Pro plan to continue enjoying all features. If you don\'t upgrade, your account will automatically switch to the Free plan.'
   },
   {
     question: 'Is my payment information secure?',
@@ -78,7 +78,7 @@ const faqs = [
   },
   {
     question: 'Do you offer refunds?',
-    answer: 'We offer a 30-day money-back guarantee. If you're not satisfied with our Pro features, contact our support team for a full refund.'
+    answer: 'We offer a 30-day money-back guarantee. If you\'re not satisfied with our Pro features, contact our support team for a full refund.'
   }
 ];
 

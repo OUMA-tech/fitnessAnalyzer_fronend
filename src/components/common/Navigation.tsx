@@ -26,10 +26,10 @@ function Navigation() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const handleProfile = () => {
-    navigate('/profile');
-  }
+  const handleMenuItemClick = (path: string) => {
+    handleClose();
+    navigate(path);
+  };
 
  
   // console.log(isAuthenticated);
@@ -70,8 +70,9 @@ function Navigation() {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleProfile}>Profile</MenuItem>
+        <MenuItem onClick={()=>handleMenuItemClick('/profile')}>Profile</MenuItem>
         <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={()=>handleMenuItemClick('/subscription')}>Subscription</MenuItem>
         <MenuItem onClick={()=>{handleLogout(dispatch,navigate)}}>Logout</MenuItem>
       </Menu>
       </Toolbar>
