@@ -16,7 +16,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Layout from '../../components/common/Layout';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import { SaveTrainPlan } from '../../features/user/trainPlanAPI';
+import { SaveTrainPlan } from '../../services/trainPlanAPI';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { handleAxiosError } from '../../utils/handleAxiosError';

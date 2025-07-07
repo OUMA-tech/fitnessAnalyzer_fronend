@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -24,7 +24,7 @@ interface Plan {
   features: string[];
 }
 
-export const SubscriptionPlans: React.FC = () => {
+export const SubscriptionPlans = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [subscribing, setSubscribing] = useState(false);
@@ -77,6 +77,8 @@ export const SubscriptionPlans: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+
+      
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}

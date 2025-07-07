@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { clearUser } from '../../slices/authSlice';
+import { clearUser } from '../slices/authSlice';
 import { Dispatch } from 'redux';
 import { NavigateFunction } from 'react-router-dom';
 

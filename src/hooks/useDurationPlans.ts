@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { fetchDurationPlan } from '../features/user/trainPlanAPI';
+import { fetchDurationPlan } from '../services/trainPlanAPI';
 import { Plan } from '../types/trainPLan';
 
 export function useMonthlyPlans(date: dayjs.Dayjs) {

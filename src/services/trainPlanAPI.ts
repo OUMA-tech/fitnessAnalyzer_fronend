@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Plan } from '../../types/trainPLan'; 
-import { store } from '../../store/store'
+import { Plan } from '../types/trainPLan'; 
+import { store } from '../store/store'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 export const SaveTrainPlan = async (tasks: Plan[]) => {

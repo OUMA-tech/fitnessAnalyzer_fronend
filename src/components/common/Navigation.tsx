@@ -1,12 +1,13 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AppBar, Toolbar, Button, Typography } from '@mui/material';
+import { AppBar, Toolbar, Button, Typography, Box } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from "react";
-import { handleLogout } from "../../features/common/authAPI";
+import { handleLogout } from "../../services/authAPI";
 import { useDispatch,useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import { SubscriptionIndicator } from "../subscription/SubscriptionIndicator";
 
 function Navigation() {
   const location = useLocation();
@@ -41,9 +42,14 @@ function Navigation() {
         </Typography>
         {isAuthenticated ? 
           (
-            <Button component={Link} to="/dashboard" variant={isActive('/')}>
-              DashBoard
-            </Button>
+            <>
+              <Button component={Link} to="/dashboard" variant={isActive('/')}>
+                DashBoard
+              </Button>
+              <Box sx={{ mx: 2 }}>
+                <SubscriptionIndicator variant="icon" showMenu />
+              </Box>
+            </>
           ): (
             <>
               <Button component={Link} to="/login" variant={isActive('/login')}>

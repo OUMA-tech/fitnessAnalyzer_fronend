@@ -4,7 +4,7 @@ import { Alert, Box } from '@mui/material';
 import RegisterForm from '../../components/common/RegisterForm';
 import VerificationForm from '../../components/common/VerificationForm';
 import Layout from '../../components/common/Layout';
-import { sendVerification, register } from '../../features/common/authAPI';
+import { sendVerification, register } from '../../services/authAPI';
 
 type Step = 'form' | 'verification';
 

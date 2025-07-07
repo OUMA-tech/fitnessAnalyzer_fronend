@@ -1,5 +1,5 @@
 import axios from "axios";
-import { store } from '../../store/store'
+import { store } from '../store/store'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 export const getUploadUrl = async(fileName:string,fileType:string) => {

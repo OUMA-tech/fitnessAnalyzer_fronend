@@ -1,6 +1,6 @@
 import axios from "axios";
-import { Record, PaginatedResponse, RecordFilters } from '../../types/record';
-import { store } from '../../store/store'
+import { Record, PaginatedResponse, RecordFilters } from '../types/record';
+import { store } from '../store/store'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const API_URL = `${apiBaseUrl}/api/records`;

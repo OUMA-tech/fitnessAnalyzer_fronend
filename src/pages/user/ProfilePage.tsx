@@ -9,7 +9,7 @@ import {
   Stack,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
-import { updateProfile, getUploadUrl, uploadToS3 } from "../../features/user/profileAPI";
+import { updateProfile, getUploadUrl, uploadToS3 } from "../../services/profileAPI";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { toast } from 'react-toastify';

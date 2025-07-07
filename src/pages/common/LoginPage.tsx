@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { LoginForm } from '../../components/common/LoginForm';
 import { setUser, setSubscription } from '../../slices/authSlice';
-import { login } from '../../features/common/authAPI';
+import { login } from '../../services/authAPI';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Box } from '@mui/material';
 import { useState } from 'react';

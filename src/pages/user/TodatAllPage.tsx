@@ -16,7 +16,7 @@ import { blue } from '@mui/material/colors';
 import { useTodayPlanFromWeekly } from '../../hooks/useDurationPlans';
 import { toast } from 'react-toastify';
 import { handleAxiosError } from '../../utils/handleAxiosError';
-import { updatePlan } from '../../features/user/trainPlanAPI';
+import { updatePlan } from '../../services/trainPlanAPI';
 import { useEffect } from 'react';
 import { usePlanBuilder } from '../../hooks/usePlanBuilder';
 

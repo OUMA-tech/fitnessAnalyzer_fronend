@@ -17,7 +17,7 @@ import {
 import Grid from '@mui/material/GridLegacy';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { fetchRecords, fetchStravaRecords } from '../../features/common/recordAPI';
+import { fetchRecords, fetchStravaRecords } from '../../services/recordAPI';
 import { Record, ActivityType } from '../../types/record';
 import Layout from '../../components/common/Layout';
 import ActivityNutritionAdvice from '../../components/activity/ActivityNutritionAdvice';
