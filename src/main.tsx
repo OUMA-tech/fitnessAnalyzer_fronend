@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from './AppRoutes.tsx'
 import { Provider } from 'react-redux'
 import { store } from './store/store.ts'
@@ -12,12 +12,12 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <HashRouter>
+    <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <AppRoutes />
         </Provider>
       </QueryClientProvider>
-    </HashRouter>
+    </BrowserRouter>
   </StrictMode>
 )
